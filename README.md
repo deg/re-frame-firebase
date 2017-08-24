@@ -1,12 +1,69 @@
-# Firebase wrapper for re-frame
+# re-frame-firebase
 
-FIXME: Write a one-line description of your library/project.
+[Re-frame](https://github.com/Day8/re-frame) wrapper around Google's
+[Firebase](https://firebase.google.com) database.
+
 
 ## Overview
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+There are already several ClojureScript wrappers of Firebase, most notably
+[Matchbox](https://github.com/crisptrutski/matchbox). However, I was not able to find
+any that work with recent version of Firebase, nor that smoothly integrate with
+re-frame.
+
+Re-frame-firebase is based on ideas, and some code, from Timothy Pratley's [blog
+post](http://timothypratley.blogspot.co.il/2016/07/reacting-to-changes-with-firebase-and.html)
+and [VoterX](https://github.com/timothypratley/voterx) project. I've added the packaging
+as a standalone project, the integration with re-frame and, I'm sure, any mistakes that
+I've not yet caught.
+
+## Configuration
+
+- Add this project to your dependencies.
+[![Clojars Project](https://img.shields.io/clojars/v/com.degel/re-frame-firebase.svg)](https://clojars.org/com.degel/re-frame-firebase)
+
+- Include firebase.js in your `index.html`.
+```
+    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
+```
+
+- Reference the main namespace in your code
+```
+   [com.degel.re-frame-firebase :as firebase]
+```
+
+- Initialize the library in your app initialization, probably just before you call `(mount-root)`
+```
+;;; From https://console.firebase.google.com/u/0/project/trilystro/overview - "Add Firebase to your web app"
+(defonce firebase-app-info
+  {:apiKey "YOUR-KEY-HERE"
+   :authDomain "YOUR-APP.firebaseapp.com"
+   :databaseURL "https://YOUR-APP.firebaseio.com"
+   :storageBucket "YOUR-APP.appspot.com"})
+
+(defn ^:export init []
+  ,,,
+  (firebase/init :firebase-app-info firebase-app-info
+                 :get-user-sub           [:user]
+                 :set-user-event         [:set-user]
+                 :default-error-handler  [:firebase-error])
+  ,,,
+)
+
+```
+
+## Usage (TBD)
+
+- Fns and event/sub vectors
+- API
+- Open TODO issues
+- Uncovered parts of firebase
+
+
 
 ## Setup
+
+_This section is Mies boilerplate. Not yet reviewed._
 
 Most of the following scripts require [rlwrap](http://utopia.knoware.nl/~hlub/uck/rlwrap/) (on OS X installable via brew).
 
@@ -48,6 +105,11 @@ Clean project specific out:
 Build a single release artifact with the following script and then open `index_release.html` in your browser.
 
     ./scripts/release
+
+## Questions
+
+I can usually be found on the [Clojurians Slack](https://clojurians.net) #reagent or
+#re-frame slack channels. My handle is @deg. Email is also fine.
 
 ## License
 
