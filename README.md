@@ -1,4 +1,4 @@
-# re-frame-firebase
+# Firebase wrapper for re-frame
 
 FIXME: Write a one-line description of your library/project.
 
@@ -51,6 +51,6 @@ Build a single release artifact with the following script and then open `index_r
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © 2017 David Goldfarb
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.

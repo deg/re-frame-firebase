@@ -4,7 +4,7 @@
 
 (let [start (System/nanoTime)]
   (b/build "src"
-    {:main 're-frame-firebase.core
+    {:main 'com.degel.re-frame-firebase.core
      :output-to "out/re_frame_firebase.js"
      :output-dir "out"
      :verbose true})
