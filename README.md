@@ -19,21 +19,19 @@ I've not yet caught.
 
 ## Configuration
 
-- Add this project to your dependencies.
 [![Clojars Project](https://img.shields.io/clojars/v/com.degel/re-frame-firebase.svg)](https://clojars.org/com.degel/re-frame-firebase)
 
+- Add this project to your dependencies.
 - Include firebase.js in your `index.html`.
-```
+
+````
     <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
-```
+````
 
-- Reference the main namespace in your code
-```
-   [com.degel.re-frame-firebase :as firebase]
-```
-
+- Reference the main namespace in your code as  `[com.degel.re-frame-firebase :as firebase]`
 - Initialize the library in your app initialization, probably just before you call `(mount-root)`
-```
+
+````
 ;;; From https://console.firebase.google.com/u/0/project/trilystro/overview - "Add Firebase to your web app"
 (defonce firebase-app-info
   {:apiKey "YOUR-KEY-HERE"
@@ -50,12 +48,12 @@ I've not yet caught.
   ,,,
 )
 
-```
+````
 
 ## Usage (TBD)
 
 - Fns and event/sub vectors
-- API
+- API (see [source](src/com/degel/re_frame_firebase.cljs))
 - Open TODO issues
 - Uncovered parts of firebase
 
