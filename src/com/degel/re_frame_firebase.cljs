@@ -51,6 +51,26 @@
 (re-frame/reg-fx :firebase/read-once core/firebase-once-effect)
 
 
+;;; Dispatch a vector of firebase effects
+;;;
+;;;
+;;; FX:
+;;; {:firebase/multi [[:firebase/write {:path ,,,}]
+;;;                   [:firebase/push {:path ,,,}]
+;;;                   ,,,]}
+;;;
+(re-frame/reg-fx
+ :firebase/multi
+ (fn [effects]
+   (run! (fn [[event-type args]]
+           (case event-type
+             :firebase/write    (core/firebase-write-effect args)
+             :firebase/push     (core/firebase-push-effect args)
+             :firebase/read-once (core/firebase-once-effect args)
+             (js/alert "Internal error: unknown firebase effect: " event-type " (" args ")")))
+         effects)))
+
+
 ;;; Watch a value in Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#on
 ;;;

@@ -23,8 +23,8 @@
   {:pre [(utils/validate (s/nilable :re-frame/vec-or-fn) on-success)
          (utils/validate (s/nilable :re-frame/vec-or-fn) on-failure)]
    :post (fn? %)}
-  (let [on-success (re-utils/event->fn on-success)
-        on-failure (re-utils/event->fn on-failure)]
+  (let [on-success (and on-success (re-utils/event->fn on-success))
+        on-failure (and on-failure (re-utils/event->fn on-failure))]
     (fn [err]
       (cond (nil? err) (when on-success (on-success))
             on-failure (on-failure err)
