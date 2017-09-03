@@ -6,6 +6,7 @@
   (:require
    [clojure.spec.alpha :as s]
    [clojure.string :as str]
+   [cljsjs.firebase]
    [com.degel.re-frame-firebase.helpers :refer [js->clj-tree success-failure-wrapper]]
    [com.degel.re-frame-firebase.specs]
    [re-frame.core :as re-frame]

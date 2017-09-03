@@ -21,13 +21,7 @@ I've not yet caught.
 
 [![Clojars Project](https://img.shields.io/clojars/v/com.degel/re-frame-firebase.svg)](https://clojars.org/com.degel/re-frame-firebase)
 
-- Add this project to your dependencies.
-- Include firebase.js in your `index.html`.
-
-````
-    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
-````
-
+- Add this project to your dependencies. Note this this automatically includes firebase too; currenntly v4.2.0
 - Reference the main namespace in your code as  `[com.degel.re-frame-firebase :as firebase]`
 - Initialize the library in your app initialization, probably just before you call `(mount-root)`
 
