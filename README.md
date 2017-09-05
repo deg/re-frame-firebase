@@ -19,14 +19,15 @@ I've not yet caught.
 
 _Note: This project is under active development, and exists primarily to meet my immediate
 needs. Therefore, many Firebase features are still missing. I will probably only add
-them as I need. But, I am receptive to feature requests and happy to accept PRs.
+them as I need. But, I am receptive to feature requests and happy to accept PRs._
 
 ## Configuration
 
 [![Clojars Project](https://img.shields.io/clojars/v/com.degel/re-frame-firebase.svg)](https://clojars.org/com.degel/re-frame-firebase)
 
-- Add this project to your dependencies. Note this this automatically includes firebase
-  too; currently v4.2.0
+- Add this project to your dependencies. The current version is
+  `[com.degel/re-frame-firebase "0.1.0"]`. Note this this automatically includes firebase
+  too; currently v4.2.0.
 - Reference the main namespace in your code: `[com.degel.re-frame-firebase :as firebase]`
 - Initialize the library in your app initialization, probably just before you call
   `(mount-root)`. See below for details.
@@ -106,7 +107,7 @@ experimental stomping ground and things may be broken at any time.
 
 Firebase supports a variety of user authentication mechanisms. Currently,
 re-frame-firebase implements only one of these: Google Authorization. (PRs welcome
-for this!)
+that add to this!)
 
 You need to write three events: two to handle login and logout requests from your views,
 and and one to store the user information returned to you from the library. You alos
@@ -127,23 +128,7 @@ example:
  (fn [_ _] {:firebase/sign-out nil}))
 
 
-;;; Remember the user object supplied to us by the library.
-;;; The important part here is the assoc into the app db.
-;;; This example also writes some of the user details into a private
-;;; part of the firebase database too. The function private-fb-path is
-;;;  not terribly interesting or generic, but is defined in trilystra,
-;;; if you want to copy ideas.
-(re-frame/reg-event-fx
- :set-user
- (fn [{db :db} [_ user]]
-   (into {:db (assoc db :user user)}
-         (when user
-           {:firebase/write {:path       (private-fb-path [:user-details] (:uid user))
-                             :value      (select-keys user [:display-name :email :photo-url])
-                             :on-success #(js/console.log "Logged in:" (:display-name user))
-                             :on-failure #(js/console.error "Failure: " %)}}))))
-                             
-;;; A simpler version might be as little as:
+;;; Store the user object
 (re-frame/reg-event-db
  :set-user
  (fn [db [_ user]]
@@ -159,10 +144,10 @@ example:
 The user object contains several opaque fields used by the library and firebase,
 and also several fields that may be useful for your application, including:
 
-- `display-name`: The user's full name
-- `email`: The user's email address
-- `photo-url`: The user's photo
-- `uid`: The user's unique id, used by Firebase. Helpful for setting up private areas in
+- `:display-name` - The user's full name
+- `:email` - The user's email address
+- `:photo-url` - The user's photo
+- `:uid` - The user's unique id, used by Firebase. Helpful for setting up private areas in
   the db
 
 
@@ -173,10 +158,10 @@ to auto-generated unique sub-nodes of a node.  In re-frame-firebase, these are e
 through the `:firebase/write` and `:firebase/push` effect handlers.
 
 Each takes parameters:
-- `path`: A vector representing a node in the firebase tree, e.g. `[:my :node]`
-- `value`: The value to write or push
-- `on-success`: Event vector or function to call when write succeeds.
-- `on-failure`: Event vector or function to call with the error.
+- `:path` - A vector representing a node in the firebase tree, e.g. `[:my :node]`
+- `:value` - The value to write or push
+- `:on-success` - Event vector or function to call when write succeeds.
+- `:on-failure` - Event vector or function to call with the error.
 
 Example:
 
@@ -192,7 +177,7 @@ Example:
 ;;; :firebase/push is treated the same
 ```
 
-re-frame-firebase alsom implements `:firebase/multi` to allow multiple write and/or
+Re-frame-firebase also supplies `:firebase/multi` to allow multiple write and/or
 pushes from a single event:
 
 ```
@@ -223,7 +208,7 @@ triggering another event. Conceptually, this is very much like an http request.
                           :on-failure [:handle-failure]}}))
 ```
 
-Firebase '`:on`' subscriptions are handled, no surprise, as re-frame subscriptions:
+Firebase '`:on`' subscriptions are handled as re-frame subscriptions:
 
 ```
 (re-frame/subscribe [:firebase/on-value {:path [:latest-message]}])
@@ -234,14 +219,13 @@ active. Effectively, this is when any variable bound to the subscription remains
 scope.
 
 This, combined with re-frame 0.9's beautiful subscription caching leads to some very
-nice behavior _(If you are not familiar with this area,
-<https://github.com/Day8/re-frame/issues/218> is a useful read)_: If you want to
-subscribe to a re_frame value for a long period of time, but want to access it deep
-inside a component, you can do this easily and efficiently by subscribing twice to the
-same path.
+nice behavior: If you want to subscribe to a re-frame value for a long period of time,
+but want to access it deep inside a component, you can do this easily and efficiently by
+subscribing twice to the same path. _(If you are not familiar with this area,
+<https://github.com/Day8/re-frame/issues/218> is a useful read)_
 
 You subscribe once in the outermost component of your page, which will, presumably,
-never be reloaded. This causes the subsription to be active.
+never be reloaded. This causes the subsription to become and remain active.
 
 You subcribe again within any component that wants to access the value. This causes
 _zero_ extra work. The firebase subscription only happens once. Firebase pushes any
