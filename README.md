@@ -26,7 +26,7 @@ them as I need. But, I am receptive to feature requests and happy to accept PRs.
 [![Clojars Project](https://img.shields.io/clojars/v/com.degel/re-frame-firebase.svg)](https://clojars.org/com.degel/re-frame-firebase)
 
 - Add this project to your dependencies. Note this this automatically includes firebase
-  too; currenntly v4.2.0
+  too; currently v4.2.0
 - Reference the main namespace in your code: `[com.degel.re-frame-firebase :as firebase]`
 - Initialize the library in your app initialization, probably just before you call
   `(mount-root)`. See below for details.
@@ -72,7 +72,7 @@ This initialization does two things:
 
 #### Credentials
 
-You need to create your Firebase project on the its
+You need to create your Firebase project on its
 [site](https://firebase.google.com). This will supply you wiht a set of credentials: an
 API key, domain, URL, and bucket. Mimicking the sample above, copy these into your code.
 
@@ -159,10 +159,10 @@ example:
 The user object contains several opaque fields used by the library and firebase,
 and also several fields that may be useful for your application, including:
 
-- `display-name`: - The user's full name
-- `email`: - The user's email address
-- `photo-url`: - The user's photo
-- `uid`: - The user's unique id, used by Firebase. Helpful for setting up private areas in
+- `display-name`: The user's full name
+- `email`: The user's email address
+- `photo-url`: The user's photo
+- `uid`: The user's unique id, used by Firebase. Helpful for setting up private areas in
   the db
 
 
@@ -173,10 +173,10 @@ to auto-generated unique sub-nodes of a node.  In re-frame-firebase, these are e
 through the `:firebase/write` and `:firebase/push` effect handlers.
 
 Each takes parameters:
-- `path`: - A vector representing a node in the firebase tree, e.g. `[:my :node]`
-- `value`: - The value to write or push
-- `on-success`: - Event vector or function to call when write succeeds.
-- `on-failure`: - Event vector or function to call with the error.
+- `path`: A vector representing a node in the firebase tree, e.g. `[:my :node]`
+- `value`: The value to write or push
+- `on-success`: Event vector or function to call when write succeeds.
+- `on-failure`: Event vector or function to call with the error.
 
 Example:
 
@@ -234,12 +234,11 @@ active. Effectively, this is when any variable bound to the subscription remains
 scope.
 
 This, combined with re-frame 0.9's beautiful subscription caching leads to some very
-nice behavior:
-_(If you are not familiar with this area, <https://github.com/Day8/re-frame/issues/218> is a useful read)._
-
-If you want to subscribe to a re_frame value for a long period of time, but want to
-access it deep inside a component, you can do this easily and efficiently by subscribing
-twice to the same path.
+nice behavior _(If you are not familiar with this area,
+<https://github.com/Day8/re-frame/issues/218> is a useful read)_: If you want to
+subscribe to a re_frame value for a long period of time, but want to access it deep
+inside a component, you can do this easily and efficiently by subscribing twice to the
+same path.
 
 You subscribe once in the outermost component of your page, which will, presumably,
 never be reloaded. This causes the subsription to be active.
@@ -249,9 +248,9 @@ _zero_ extra work. The firebase subscription only happens once. Firebase pushes 
 changes as they happen, precisely once per change. Re-frame-firebase caches the current
 value locally. The subscriptions read the value from the local cache.
 
-Internal detail: The values are currently cached in your app db, under the key
+_Internal detail: The values are currently cached in your app db, under the key
 `com.degel.re-frame-firebase.core\cache`. But, this is an implementation detail, subject
-to change. Please do not rely on this for anything except, perhaps, debugging.
+to change. Please do not rely on this for anything except, perhaps, debugging._
 
 
 ## Setup

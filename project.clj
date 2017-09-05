@@ -11,7 +11,7 @@
                  [cljsjs/firebase "4.2.0-0"]
                  [re-frame "0.10.1"]
                  [reagent "0.7.0"]
-                 [com.degel/sodium "0.2.0-SNAPSHOT"]]
+                 [com.degel/sodium "0.2.0"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :plugins [[lein-npm "0.6.2"]]
   :npm {:dependencies [[source-map-support "0.4.0"]]}
