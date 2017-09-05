@@ -29,6 +29,9 @@
          :get-user-fn           (sub->fn get-user-sub)
          :default-error-handler (event->fn (or default-error-handler js/alert))))
 
+;;; [TODO] Consider adding a default atom to hold the user state when :get-user-fn and
+;;; and :set-user-fn are not defined. Need to do this carefully, so as not to cause any
+;;; surprises for users who accidentally defined just one of the two callbacks.
 (defn current-user []
   (when-let [handler (:get-user-fn @firebase-state)]
     (handler)))

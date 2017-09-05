@@ -44,9 +44,9 @@
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#once
 ;;;
 ;;; FX:
-;;; {:firebase/push [:path [:my :data]
-;;;                  :on-success #(prn "Write succeeded")
-;;;                  :on-failure [:firebase-error]]}
+;;; {:firebase/read-once [:path [:my :data]
+;;;                      :on-success [:got-my-data]
+;;;                      :on-failure [:firebase-error]]}
 ;;;
 (re-frame/reg-fx :firebase/read-once core/firebase-once-effect)
 
