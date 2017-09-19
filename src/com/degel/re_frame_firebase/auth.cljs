@@ -45,11 +45,9 @@
    (core/default-error-handler)))
 
 
-(defn google-sign-in
-  [{:keys [sign-in-method] :or {sign-in-method :redirect}}]
-  ;; TODO: use Credential for mobile.
-  (let [auth (js/firebase.auth.)
-        auth-provider (js/firebase.auth.GoogleAuthProvider.)]
+(defn- sign-in
+  [sign-in-method auth-provider]
+  (let [auth (js/firebase.auth.)]
     (case sign-in-method
       :popup
       (.signInWithPopup auth auth-provider)
@@ -59,6 +57,40 @@
 
       (>evt [(core/default-error-handler)
              (js/Error. (str "Unsupported sign-in-method: " sign-in-method ". Either :redirect or :popup are supported."))]))))
+
+(defn- oauth-sign-in
+  [auth-provider opts]
+  (let [{:keys [sign-in-method scopes custom-parameters]
+         :or {sign-in-method :redirect}} opts]
+
+    (doseq [scope scopes]
+      (.addScope auth-provider scope))
+
+    (when custom-parameters
+      (.setCustomParameters auth-provider (clj->js custom-parameters)))
+
+    (sign-in sign-in-method auth-provider)))
+
+
+(defn google-sign-in
+  [opts]
+  ;; TODO: use Credential for mobile.
+  (oauth-sign-in (js/firebase.auth.GoogleAuthProvider.) opts))
+
+
+(defn facebook-sign-in
+  [opts]
+  (oauth-sign-in (js/firebase.auth.FacebookAuthProvider.) opts))
+
+
+(defn twitter-sign-in
+  [opts]
+  (oauth-sign-in (js/firebase.auth.TwitterAuthProvider.) opts))
+
+
+(defn github-sign-in
+  [opts]
+  (oauth-sign-in (js/firebase.auth.GithubAuthProvider.) opts))
 
 
 (defn sign-out []

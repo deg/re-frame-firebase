@@ -81,13 +81,20 @@
 (re-frame/reg-sub-raw :firebase/on-value  core/firebase-on-value-sub)
 
 
-;;; Login to firebase, using Google authentication
-;;; [TODO] Extend this to other authentications too
+;;; Login to firebase, using one of OAuth providers
 ;;;
+;;; Example usage:
 ;;; FX:
-;;; {firebase/google-sign-in {:sign-in-method :redirect or :popup}}
+;;; {firebase/google-sign-in {:sign-in-method :redirect or :popup
+;;;                           :scopes ["https://www.googleapis.com/auth/contacts.readonly"
+;;;                                    "https://www.googleapis.com/auth/calendar.readonly"]
+;;;                           :custom-parameters {"login_hint" "user@example.com"}}}
 ;;;
+
 (re-frame/reg-fx :firebase/google-sign-in auth/google-sign-in)
+(re-frame/reg-fx :firebase/facebook-sign-in auth/facebook-sign-in)
+(re-frame/reg-fx :firebase/twitter-sign-in auth/twitter-sign-in)
+(re-frame/reg-fx :firebase/github-sign-in auth/github-sign-in)
 
 
 ;;; Logout
