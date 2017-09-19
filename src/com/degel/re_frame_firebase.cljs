@@ -85,7 +85,7 @@
 ;;; [TODO] Extend this to other authentications too
 ;;;
 ;;; FX:
-;;; {firebase/google-sign-in []}
+;;; {firebase/google-sign-in {:sign-in-method :redirect or :popup}}
 ;;;
 (re-frame/reg-fx :firebase/google-sign-in auth/google-sign-in)
 

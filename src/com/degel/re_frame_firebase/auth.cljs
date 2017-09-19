@@ -4,7 +4,7 @@
    [clojure.spec.alpha :as s]
    [com.degel.re-frame-firebase.core :as core]
    [re-frame.core :as re-frame]
-   [sodium.re-utils :refer [event->fn sub->fn]]))
+   [sodium.re-utils :refer [>evt event->fn sub->fn]]))
 
 
 (defn- user
@@ -45,11 +45,20 @@
    (core/default-error-handler)))
 
 
-(defn google-sign-in []
+(defn google-sign-in
+  [{:keys [sign-in-method] :or {sign-in-method :redirect}}]
   ;; TODO: use Credential for mobile.
-  (.signInWithRedirect
-    (js/firebase.auth.)
-    (js/firebase.auth.GoogleAuthProvider.)))
+  (let [auth (js/firebase.auth.)
+        auth-provider (js/firebase.auth.GoogleAuthProvider.)]
+    (case sign-in-method
+      :popup
+      (.signInWithPopup auth auth-provider)
+
+      :redirect
+      (.signInWithRedirect auth auth-provider)
+
+      (>evt [(core/default-error-handler)
+             (js/Error. (str "Unsupported sign-in-method: " sign-in-method ". Either :redirect or :popup are supported."))]))))
 
 
 (defn sign-out []
