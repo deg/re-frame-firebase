@@ -1,7 +1,7 @@
 ;;; Author: David Goldfarb (deg@degel.com)
 ;;; Copyright (c) 2017, David Goldfarb
 
-(defproject com.degel/re-frame-firebase "0.1.0"
+(defproject com.degel/re-frame-firebase "0.2.0-SNAPSHOT"
   :description "A re-frame wrapper around firebase"
   :url "https://github.com/deg/re-frame-firebase"
   :license {:name "Eclipse Public License"

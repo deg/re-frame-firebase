@@ -232,6 +232,10 @@ _zero_ extra work. The firebase subscription only happens once. Firebase pushes 
 changes as they happen, precisely once per change. Re-frame-firebase caches the current
 value locally. The subscriptions read the value from the local cache.
 
+_Note well: It is not sufficient to just mention the subscription in the outer
+component. You must actually use it in the component, so that it is embedded in a
+mounted component._
+
 _Internal detail: The values are currently cached in your app db, under the key
 `com.degel.re-frame-firebase.core\cache`. But, this is an implementation detail, subject
 to change. Please do not rely on this for anything except, perhaps, debugging._
