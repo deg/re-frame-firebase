@@ -106,11 +106,19 @@ experimental stomping ground and things may be broken at any time.
 ### Authentication
 
 Firebase supports a variety of user authentication mechanisms. Currently,
-re-frame-firebase implements only one of these: Google Authorization. (PRs welcome
-that add to this!)
+re-frame-firebase supports following Firebase authentication providers:
+ - Google
+ - Facebook
+ - Twitter
+ - GitHub
+ 
+(PRs welcome that add to this!)
+
+Before an authentication provider can be used, it has to be enabled and configured in
+Firebase Console (Authentication -> Sign-in method section).
 
 You need to write three events: two to handle login and logout requests from your views,
-and and one to store the user information returned to you from the library. You alos
+and and one to store the user information returned to you from the library. You also
 need to write a subscription to return the user information to the library.  For
 example:
 
@@ -119,7 +127,7 @@ example:
 ;;; fx handler.
 (re-frame/reg-event-fx
  :sign-in
- (fn [_ _] {:firebase/google-sign-in nil}))
+ (fn [_ _] {:firebase/google-sign-in {:sign-in-method :popup}))
 
 
 ;;; Ditto for sign-out
