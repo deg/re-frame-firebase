@@ -44,24 +44,15 @@
      (core/set-current-user (user firebase-user)))
    (core/default-error-handler)))
 
-
-(defn- sign-in
-  [sign-in-method auth-provider]
-  (let [auth (js/firebase.auth.)]
-    (case sign-in-method
-      :popup
-      (.signInWithPopup auth auth-provider)
-
-      :redirect
-      (.signInWithRedirect auth auth-provider)
-
-      (>evt [(core/default-error-handler)
-             (js/Error. (str "Unsupported sign-in-method: " sign-in-method ". Either :redirect or :popup are supported."))]))))
+(def ^:private sign-in-fns
+  {:popup (memfn signInWithPopup auth-provider)
+   :redirect (memfn signInWithRedirect auth-provider)})
 
 (defn- oauth-sign-in
   [auth-provider opts]
   (let [{:keys [sign-in-method scopes custom-parameters]
-         :or {sign-in-method :redirect}} opts]
+         :or {sign-in-method :redirect}} opts
+        auth (js/firebase.auth.)]
 
     (doseq [scope scopes]
       (.addScope auth-provider scope))
@@ -69,7 +60,12 @@
     (when custom-parameters
       (.setCustomParameters auth-provider (clj->js custom-parameters)))
 
-    (sign-in sign-in-method auth-provider)))
+    (if-let [sign-in (sign-in-fns sign-in-method)]
+      (.catch
+        (sign-in auth auth-provider)
+        (core/default-error-handler))
+      (>evt [(core/default-error-handler)
+             (js/Error. (str "Unsupported sign-in-method: " sign-in-method ". Either :redirect or :popup are supported."))]))))
 
 
 (defn google-sign-in
