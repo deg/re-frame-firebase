@@ -4,7 +4,7 @@
    [clojure.spec.alpha :as s]
    [com.degel.re-frame-firebase.core :as core]
    [re-frame.core :as re-frame]
-   [sodium.re-utils :refer [event->fn sub->fn]]))
+   [sodium.re-utils :refer [>evt event->fn sub->fn]]))
 
 
 (defn- user
@@ -44,12 +44,49 @@
      (core/set-current-user (user firebase-user)))
    (core/default-error-handler)))
 
+(def ^:private sign-in-fns
+  {:popup (memfn signInWithPopup auth-provider)
+   :redirect (memfn signInWithRedirect auth-provider)})
 
-(defn google-sign-in []
+(defn- oauth-sign-in
+  [auth-provider opts]
+  (let [{:keys [sign-in-method scopes custom-parameters]
+         :or {sign-in-method :redirect}} opts
+        auth (js/firebase.auth.)]
+
+    (doseq [scope scopes]
+      (.addScope auth-provider scope))
+
+    (when custom-parameters
+      (.setCustomParameters auth-provider (clj->js custom-parameters)))
+
+    (if-let [sign-in (sign-in-fns sign-in-method)]
+      (.catch
+        (sign-in auth auth-provider)
+        (core/default-error-handler))
+      (>evt [(core/default-error-handler)
+             (js/Error. (str "Unsupported sign-in-method: " sign-in-method ". Either :redirect or :popup are supported."))]))))
+
+
+(defn google-sign-in
+  [opts]
   ;; TODO: use Credential for mobile.
-  (.signInWithRedirect
-    (js/firebase.auth.)
-    (js/firebase.auth.GoogleAuthProvider.)))
+  (oauth-sign-in (js/firebase.auth.GoogleAuthProvider.) opts))
+
+
+(defn facebook-sign-in
+  [opts]
+  (oauth-sign-in (js/firebase.auth.FacebookAuthProvider.) opts))
+
+
+(defn twitter-sign-in
+  [opts]
+  (oauth-sign-in (js/firebase.auth.TwitterAuthProvider.) opts))
+
+
+(defn github-sign-in
+  [opts]
+  (oauth-sign-in (js/firebase.auth.GithubAuthProvider.) opts))
 
 
 (defn sign-out []

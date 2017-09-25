@@ -81,13 +81,34 @@
 (re-frame/reg-sub-raw :firebase/on-value  core/firebase-on-value-sub)
 
 
-;;; Login to firebase, using Google authentication
-;;; [TODO] Extend this to other authentications too
+;;; Login to firebase, using one of OAuth providers
 ;;;
+;;; Accepts a map of the following options:
+;;;
+;;; - :sign-in-method      either :redirect (default) or :popup mode
+;;;
+;;; - :scopes              a sequence of additional OAuth scopes; supported for following auth providers:
+;;;                        Google: https://developers.google.com/identity/protocols/googlescopes
+;;;                        Facebook: https://developers.facebook.com/docs/facebook-login/permissions
+;;;                        GitHub: https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/
+;;;
+;;; - :custom-parameters   check auth providers documentation for supported values:
+;;;                        Google: https://firebase.google.com/docs/reference/js/firebase.auth.GoogleAuthProvider#setCustomParameters
+;;;                        Facebook: https://firebase.google.com/docs/reference/js/firebase.auth.FacebookAuthProvider#setCustomParameters
+;;;                        Twitter: https://firebase.google.com/docs/reference/js/firebase.auth.TwitterAuthProvider#setCustomParameters
+;;;                        GitHub: https://firebase.google.com/docs/reference/js/firebase.auth.GithubAuthProvider#setCustomParameters
+;;;
+;;; Example usage:
 ;;; FX:
-;;; {firebase/google-sign-in []}
+;;; {firebase/google-sign-in {:sign-in-method :popup
+;;;                           :scopes ["https://www.googleapis.com/auth/contacts.readonly"
+;;;                                    "https://www.googleapis.com/auth/calendar.readonly"]
+;;;                           :custom-parameters {"login_hint" "user@example.com"}}}
 ;;;
 (re-frame/reg-fx :firebase/google-sign-in auth/google-sign-in)
+(re-frame/reg-fx :firebase/facebook-sign-in auth/facebook-sign-in)
+(re-frame/reg-fx :firebase/twitter-sign-in auth/twitter-sign-in)
+(re-frame/reg-fx :firebase/github-sign-in auth/github-sign-in)
 
 
 ;;; Logout

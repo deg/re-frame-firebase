@@ -11,3 +11,5 @@
 /release/
 /target/
 pom.xml
+/.idea
+/*.iml
