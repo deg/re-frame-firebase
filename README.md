@@ -106,7 +106,7 @@ experimental stomping ground and things may be broken at any time.
 ### Authentication
 
 Firebase supports a variety of user authentication mechanisms. Currently,
-re-frame-firebase supports following Firebase authentication providers:
+re-frame-firebase supports the following Firebase authentication providers:
  - Google
  - Facebook
  - Twitter
@@ -115,7 +115,8 @@ re-frame-firebase supports following Firebase authentication providers:
 (PRs welcome that add to this!)
 
 Before an authentication provider can be used, it has to be enabled and configured in
-Firebase Console (Authentication -> Sign-in method section).
+the [Firebase Console](https://console.firebase.google.com/u/0/) (Authentication ->
+Sign-in method section).
 
 You need to write three events: two to handle login and logout requests from your views,
 and and one to store the user information returned to you from the library. You also

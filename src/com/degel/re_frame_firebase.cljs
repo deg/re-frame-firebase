@@ -85,18 +85,18 @@
 ;;;
 ;;; Accepts a map of the following options:
 ;;;
-;;; - :sign-in-method      either :redirect (default) or :popup mode
+;;; - :sign-in-method  either :redirect (default) or :popup mode
 ;;;
-;;; - :scopes              a sequence of additional OAuth scopes; supported for following auth providers:
-;;;                        Google: https://developers.google.com/identity/protocols/googlescopes
-;;;                        Facebook: https://developers.facebook.com/docs/facebook-login/permissions
-;;;                        GitHub: https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/
+;;; - :scopes       a sequence of additional OAuth scopes; supported for following auth providers:
+;;;       Google:   https://developers.google.com/identity/protocols/googlescopes
+;;;       Facebook: https://developers.facebook.com/docs/facebook-login/permissions
+;;;       GitHub:   https://developer.github.com/apps/building-integrations/setting-up-and-registering-oauth-apps/
 ;;;
-;;; - :custom-parameters   check auth providers documentation for supported values:
-;;;                        Google: https://firebase.google.com/docs/reference/js/firebase.auth.GoogleAuthProvider#setCustomParameters
-;;;                        Facebook: https://firebase.google.com/docs/reference/js/firebase.auth.FacebookAuthProvider#setCustomParameters
-;;;                        Twitter: https://firebase.google.com/docs/reference/js/firebase.auth.TwitterAuthProvider#setCustomParameters
-;;;                        GitHub: https://firebase.google.com/docs/reference/js/firebase.auth.GithubAuthProvider#setCustomParameters
+;;; - :custom-parameters  check auth providers documentation for supported values:
+;;;       Google:   https://firebase.google.com/docs/reference/js/firebase.auth.GoogleAuthProvider#setCustomParameters
+;;;       Facebook: https://firebase.google.com/docs/reference/js/firebase.auth.FacebookAuthProvider#setCustomParameters
+;;;       Twitter:  https://firebase.google.com/docs/reference/js/firebase.auth.TwitterAuthProvider#setCustomParameters
+;;;       GitHub:   https://firebase.google.com/docs/reference/js/firebase.auth.GithubAuthProvider#setCustomParameters
 ;;;
 ;;; Example usage:
 ;;; FX:
@@ -105,10 +105,10 @@
 ;;;                                    "https://www.googleapis.com/auth/calendar.readonly"]
 ;;;                           :custom-parameters {"login_hint" "user@example.com"}}}
 ;;;
-(re-frame/reg-fx :firebase/google-sign-in auth/google-sign-in)
+(re-frame/reg-fx :firebase/google-sign-in   auth/google-sign-in)
 (re-frame/reg-fx :firebase/facebook-sign-in auth/facebook-sign-in)
-(re-frame/reg-fx :firebase/twitter-sign-in auth/twitter-sign-in)
-(re-frame/reg-fx :firebase/github-sign-in auth/github-sign-in)
+(re-frame/reg-fx :firebase/twitter-sign-in  auth/twitter-sign-in)
+(re-frame/reg-fx :firebase/github-sign-in   auth/github-sign-in)
 
 
 ;;; Logout
