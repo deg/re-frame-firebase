@@ -70,7 +70,7 @@
          #((event->fn on-failure) %)))
 
 
-(defn firebase-on-value-sub [app-db [_ {:keys [path on-failure]}]]
+(defn firebase-on-value-sub [app-db [_ {:keys [path on-value on-failure]}]]
   (let [ref (fb-ref path)
         ;; [TODO] Potential bug alert:
         ;;        We are caching the results, keyed only by path, and we clear
@@ -84,7 +84,11 @@
         ;;        (modulo some reflection hack), since we use the id as part of
         ;;        the callback closure.
         id path
-        callback #(>evt [::on-value-handler id (js->clj-tree %)])]
+        callback (fn [value]
+                   (let [value (js->clj-tree value)]
+                     (when on-value
+                       (>evt [on-value value]))
+                     (>evt [::on-value-handler id value])))]
     (.on ref "value" callback (event->fn (or on-failure (default-error-handler))))
     (rv/make-reaction
      (fn [] (get-in @app-db [::cache id] []))

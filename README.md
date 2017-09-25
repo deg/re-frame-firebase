@@ -249,6 +249,14 @@ _Internal detail: The values are currently cached in your app db, under the key
 `com.degel.re-frame-firebase.core\cache`. But, this is an implementation detail, subject
 to change. Please do not rely on this for anything except, perhaps, debugging._
 
+The subscription support additional keys:
+
+- `on-failure` - called when Firebase `:on` subscription error occurs (e.g. due to lack of
+                 permission to read the data)
+- `on-value` - called with the inital value and again whenever the value changes. It might
+be useful to trigger an event which will store the value in the `app-db` so it's accessible
+by event handlers.
+
 
 ## Setup
 
