@@ -12,14 +12,11 @@
    [com.degel.re-frame-firebase.core :as core]
    [re-frame.core :as re-frame]))
 
-(enable-console-print!)
-(println "Re-frame-firebase loaded")
-
 
 ;;; Write a value to Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#set
 ;;;
-;;; FX:
+;;; Example FX:
 ;;; {:firebase/write [:path [:my :data]
 ;;;                   :value 42
 ;;;                   :on-success #(prn "Write succeeded")
@@ -31,7 +28,7 @@
 ;;; Write a value to a Firebase list.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#push
 ;;;
-;;; FX:
+;;; Example FX:
 ;;; {:firebase/push [:path [:my :collection]
 ;;;                  :value "Hello world"
 ;;;                  :on-success #(prn "Push succeeded")
@@ -43,7 +40,7 @@
 ;;; Asynch one-time read of a value in Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#once
 ;;;
-;;; FX:
+;;; Example FX:
 ;;; {:firebase/read-once [:path [:my :data]
 ;;;                      :on-success [:got-my-data]
 ;;;                      :on-failure [:firebase-error]]}
@@ -54,7 +51,7 @@
 ;;; Dispatch a vector of firebase effects
 ;;;
 ;;;
-;;; FX:
+;;; Example FX:
 ;;; {:firebase/multi [[:firebase/write {:path ,,,}]
 ;;;                   [:firebase/push {:path ,,,}]
 ;;;                   ,,,]}
@@ -64,8 +61,8 @@
  (fn [effects]
    (run! (fn [[event-type args]]
            (case event-type
-             :firebase/write    (core/firebase-write-effect args)
-             :firebase/push     (core/firebase-push-effect args)
+             :firebase/write     (core/firebase-write-effect args)
+             :firebase/push      (core/firebase-push-effect args)
              :firebase/read-once (core/firebase-once-effect args)
              (js/alert "Internal error: unknown firebase effect: " event-type " (" args ")")))
          effects)))

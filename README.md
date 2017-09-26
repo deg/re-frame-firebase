@@ -26,7 +26,7 @@ them as I need. But, I am receptive to feature requests and happy to accept PRs.
 [![Clojars Project](https://img.shields.io/clojars/v/com.degel/re-frame-firebase.svg)](https://clojars.org/com.degel/re-frame-firebase)
 
 - Add this project to your dependencies. The current version is
-  `[com.degel/re-frame-firebase "0.1.0"]`. Note this this automatically includes firebase
+  `[com.degel/re-frame-firebase "0.2.0"]`. Note this this automatically includes firebase
   too; currently v4.2.0.
 - Reference the main namespace in your code: `[com.degel.re-frame-firebase :as firebase]`
 - Initialize the library in your app initialization, probably just before you call
