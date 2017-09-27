@@ -17,11 +17,16 @@
      :photo-url     (.-photoURL firebase-user)
      :email         (-> firebase-user .-providerData first .-email)}))
 
+(defn- set-user
+  [firebase-user]
+  (-> firebase-user
+      (user)
+      (core/set-current-user)))
+
 (defn- init-auth []
   (.onAuthStateChanged
    (js/firebase.auth)
-   (fn auth-state-changed [firebase-user]
-     (core/set-current-user (user firebase-user)))
+   set-user
    (core/default-error-handler))
 
   (-> (js/firebase.auth)
@@ -29,17 +34,24 @@
       (.then (fn on-user-credential [user-credential]
                (-> user-credential
                    (.-user)
-                   (user)
-                   (core/set-current-user))))
+                   set-user)))
       (.catch (core/default-error-handler))))
 
 (def ^:private sign-in-fns
   {:popup (memfn signInWithPopup auth-provider)
    :redirect (memfn signInWithRedirect auth-provider)})
 
+(defn- maybe-link-with-credential
+  [pending-credential user-credential]
+  (when (and pending-credential user-credential)
+    (when-let [firebase-user (.-user user-credential)]
+      (-> firebase-user
+          (.linkWithCredential pending-credential)
+          (.catch (core/default-error-handler))))))
+
 (defn- oauth-sign-in
   [auth-provider opts]
-  (let [{:keys [sign-in-method scopes custom-parameters]
+  (let [{:keys [sign-in-method scopes custom-parameters link-with-credential]
          :or {sign-in-method :redirect}} opts]
 
     (doseq [scope scopes]
@@ -51,6 +63,7 @@
     (if-let [sign-in (sign-in-fns sign-in-method)]
       (-> (js/firebase.auth)
           (sign-in auth-provider)
+          (.then (partial maybe-link-with-credential link-with-credential))
           (.catch (core/default-error-handler)))
       (>evt [(core/default-error-handler)
              (js/Error. (str "Unsupported sign-in-method: " sign-in-method ". Either :redirect or :popup are supported."))]))))
