@@ -128,7 +128,7 @@ example:
 ;;; fx handler.
 (re-frame/reg-event-fx
  :sign-in
- (fn [_ _] {:firebase/google-sign-in {:sign-in-method :popup}))
+ (fn [_ _] {:firebase/google-sign-in {:sign-in-method :popup}}))
 
 
 ;;; Ditto for sign-out
