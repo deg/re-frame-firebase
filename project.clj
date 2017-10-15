@@ -6,12 +6,12 @@
   :url "https://github.com/deg/re-frame-firebase"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha17"]
-                 [org.clojure/clojurescript "1.9.908"]
-                 [cljsjs/firebase "4.2.0-0"]
-                 [re-frame "0.10.1"]
+  :dependencies [[org.clojure/clojure "1.9.0-beta2"]
+                 [org.clojure/clojurescript "1.9.946"]
+                 [cljsjs/firebase "4.4.0-0"]
+                 [re-frame "0.10.2"]
                  [reagent "0.7.0"]
-                 [com.degel/sodium "0.3.0"]]
+                 [com.degel/sodium "0.6.1"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :plugins [[lein-npm "0.6.2"]]
   :npm {:dependencies [[source-map-support "0.4.0"]]}

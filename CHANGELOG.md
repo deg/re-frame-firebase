@@ -1,7 +1,8 @@
 # Change Log
 
 ## [Unreleased]
-- _(nothing yet)_
+- Add account linking
+- Update dependencies
 
 ## [0.2.0]
 - Add Facebook, Twitter, and Github auth
