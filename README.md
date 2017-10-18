@@ -27,7 +27,7 @@ them as I need. But, I am receptive to feature requests and happy to accept PRs.
 
 - Add this project to your dependencies. The current version is
   `[com.degel/re-frame-firebase "0.3.0"]`. Note this this automatically includes firebase
-  too; currently v4.2.0.
+  too; currently v4.4.0.
 - Reference the main namespace in your code: `[com.degel.re-frame-firebase :as firebase]`
 - Initialize the library in your app initialization, probably just before you call
   `(mount-root)`. See below for details.
