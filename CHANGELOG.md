@@ -1,8 +1,12 @@
 # Change Log
 
 ## [Unreleased]
+- _(nothing yet)_
+
+## [0.3.0]
 - Add account linking
 - Update dependencies
+- Add connection state monitoring
 
 ## [0.2.0]
 - Add Facebook, Twitter, and Github auth

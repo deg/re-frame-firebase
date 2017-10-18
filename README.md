@@ -26,7 +26,7 @@ them as I need. But, I am receptive to feature requests and happy to accept PRs.
 [![Clojars Project](https://img.shields.io/clojars/v/com.degel/re-frame-firebase.svg)](https://clojars.org/com.degel/re-frame-firebase)
 
 - Add this project to your dependencies. The current version is
-  `[com.degel/re-frame-firebase "0.2.0"]`. Note this this automatically includes firebase
+  `[com.degel/re-frame-firebase "0.3.0"]`. Note this this automatically includes firebase
   too; currently v4.2.0.
 - Reference the main namespace in your code: `[com.degel.re-frame-firebase :as firebase]`
 - Initialize the library in your app initialization, probably just before you call
@@ -250,6 +250,34 @@ _Internal detail: The values are currently cached in your app db, under the key
 to change. Please do not rely on this for anything except, perhaps, debugging._
 
 
+### Monitoring connectivity
+
+Your client's connection to the Firebase server may go down sometimes. You
+can detect this by subscribing to `:firebase/connection-state`. This
+subscription delivers a map, currently containing only one element:
+`:firebase/connected`. Its value will be `true` when the connection is up and
+`false` when down.
+
+Firebase's web/javascript client does a good job of handling offline
+conditions, so you can actually often ignore these state changes. For
+example, database values are cached locally and can be read even when the
+server is temporarily unaccessible.  Writes, however, are a bit
+trickier. Firebase does cache and retry, but only while the client web page
+is up. If your web page is closed, I think that any writes done while offline
+will be lost. Therefore, it is advisable to check the connection state when
+attempting a write. If the connection is down, you can warn the user or store
+the results locally.
+([re-frame-storage-fx](https://github.com/deg/re-frame-storage-fx)
+may be useful for this).
+
+## Sample project
+
+I have a toy project, [Trilystro](https://github.com/deg/trilystro) which
+uses re-frame-firebase. It is an evolving work, so I cannot offer any
+guarantees that it will always be stable. But, I have tried to keep the code
+reasonably clean and readable. It will also often be running at
+<http://trilystro.vuagain.com>
+
 ## Setup
 
 This is a library project. Although it still includes some of the Mies
@@ -311,8 +339,9 @@ _The rest of this section is Mies boilerplate. Probably all correct, but not nec
 
 ## Questions
 
-I can usually be found on the [Clojurians Slack](https://clojurians.net) #reagent or
-#re-frame slack channels. My handle is @deg. Email is also fine.
+I can usually be found on the [Clojurians Slack](https://clojurians.net)
+#reagent or #re-frame slack channels. My handle is @deg. Email is also fine,
+or you can report issues or PRs directly to this project.
 
 ## License
 

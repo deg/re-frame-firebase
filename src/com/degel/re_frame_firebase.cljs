@@ -117,6 +117,17 @@
 
 
 
+;;; Monitor connection status
+;;;
+(re-frame/reg-sub
+ :firebase/connection-state
+ (fn [_ _]
+   (re-frame/subscribe [:firebase/on-value {:path [:.info :connected]}]))
+ (fn [connected? _]
+   {:firebase/connected? (= connected? true)}))
+
+
+
 ;;; Start library and register callbacks.
 ;;;
 ;;;
