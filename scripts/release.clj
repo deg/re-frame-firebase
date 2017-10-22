@@ -7,5 +7,7 @@
     {:output-to "release/re_frame_firebase.js"
      :output-dir "release"
      :optimizations :advanced
-     :verbose true})
+     :language-in :ecmascript5
+     ; :verbose true
+     })
   (println "... done. Elapsed" (/ (- (System/nanoTime) start) 1e9) "seconds"))
