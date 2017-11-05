@@ -71,25 +71,32 @@
 
 
 (defn firebase-on-value-sub [app-db [_ {:keys [path on-failure]}]]
-  (let [ref (fb-ref path)
-        ;; [TODO] Potential bug alert:
-        ;;        We are caching the results, keyed only by path, and we clear
-        ;;        the cache entry in :on-dispose.  I can imagine situations
-        ;;        where this would be problematic if someone tried watching the
-        ;;        same path from two code locations. If this becomes an issue, we
-        ;;        might need to add an optional disambiguation argument to the
-        ;;        subscription.
-        ;;        Note that firebase itself seems to guard against this by using
-        ;;        the callback itself as a unique key to .off.  We can't do that
-        ;;        (modulo some reflection hack), since we use the id as part of
-        ;;        the callback closure.
-        id path
-        callback #(>evt [::on-value-handler id (js->clj-tree %)])]
-    (.on ref "value" callback (event->fn (or on-failure (default-error-handler))))
-    (rv/make-reaction
-     (fn [] (get-in @app-db [::cache id] []))
-     :on-dispose #(do (.off ref "value" callback)
-                      (>evt [::on-value-handler id nil])))))
+  (if path
+    (let [ref (fb-ref path)
+          ;; [TODO] Potential bug alert:
+          ;;        We are caching the results, keyed only by path, and we clear
+          ;;        the cache entry in :on-dispose.  I can imagine situations
+          ;;        where this would be problematic if someone tried watching the
+          ;;        same path from two code locations. If this becomes an issue, we
+          ;;        might need to add an optional disambiguation argument to the
+          ;;        subscription.
+          ;;        Note that firebase itself seems to guard against this by using
+          ;;        the callback itself as a unique key to .off.  We can't do that
+          ;;        (modulo some reflection hack), since we use the id as part of
+          ;;        the callback closure.
+          id path
+          callback #(>evt [::on-value-handler id (js->clj-tree %)])]
+      (.on ref "value" callback (event->fn (or on-failure (default-error-handler))))
+      (rv/make-reaction
+       (fn [] (get-in @app-db [::cache id] []))
+       :on-dispose #(do (.off ref "value" callback)
+                        (>evt [::on-value-handler id nil]))))
+    (do
+      (console :error "Received null Firebase on-value request")
+      (rv/make-reaction
+       (fn []
+         ;; Minimal dummy response, to avoid blowing up caller
+         nil)))))
 
 (re-frame/reg-event-db
  ::on-value-handler

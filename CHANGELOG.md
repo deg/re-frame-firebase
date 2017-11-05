@@ -1,7 +1,7 @@
 # Change Log
 
 ## [Unreleased]
-- _(nothing yet)_
+- Make :-on handler more error-resistant
 
 ## [0.3.0]
 - Add account linking
