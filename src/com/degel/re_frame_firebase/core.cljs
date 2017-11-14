@@ -17,8 +17,8 @@
    [sodium.re-utils :refer [<sub >evt event->fn sub->fn]]
    [sodium.utils :as utils]))
 
-;;; [TODO] Move to Sodium?
-(s/def ::app-db #(= reagent.ratom/RAtom (type %)))
+
+(s/def ::cache (s/nilable (s/keys)))
 
 ;;; Used mostly to register client handlers
 (defonce firebase-state (atom {}))
