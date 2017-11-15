@@ -24,6 +24,7 @@ them as I need. But, I am receptive to feature requests and happy to accept PRs.
 ## Configuration
 
 [![Clojars Project](https://img.shields.io/clojars/v/com.degel/re-frame-firebase.svg)](https://clojars.org/com.degel/re-frame-firebase)
+[![Dependencies Status](https://versions.deps.co/deg/re-frame-firebase/status.svg)](https://versions.deps.co/deg/re-frame-firebase)
 
 - Add this project to your dependencies. The current version is
   `[com.degel/re-frame-firebase "0.3.0"]`. Note this this automatically includes firebase
