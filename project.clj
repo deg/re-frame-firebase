@@ -13,6 +13,7 @@
                  [reagent "0.7.0"]
                  [com.degel/sodium "0.7.0"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
+  :cljsbuild {:builds {}} ; prevent https://github.com/emezeske/lein-cljsbuild/issues/413
   :plugins [[lein-npm "0.6.2"]]
   :npm {:dependencies [[source-map-support "0.4.0"]]}
   :source-paths ["src" "target/classes"]
