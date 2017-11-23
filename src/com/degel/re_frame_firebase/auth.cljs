@@ -4,7 +4,7 @@
    [clojure.spec.alpha :as s]
    [com.degel.re-frame-firebase.core :as core]
    [re-frame.core :as re-frame]
-   [sodium.re-utils :refer [>evt event->fn sub->fn]]))
+   [iron.re-utils :refer [>evt]]))
 
 
 (defn- user

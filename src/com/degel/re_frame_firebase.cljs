@@ -131,7 +131,7 @@
 ;;; Start library and register callbacks.
 ;;;
 ;;;
-;;; In Sodium style, most of the parameters can be either a function or a
+;;; In Iron style, most of the parameters can be either a function or a
 ;;; re-frame event/sub vector. If there is a parameter, it will passed to the
 ;;; function or conj'd onto the vector.
 ;;;

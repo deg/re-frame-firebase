@@ -13,9 +13,9 @@
    [re-frame.loggers :refer [console]]
    [reagent.core :as reagent]
    [reagent.ratom :as rv]
-   [sodium.chrome-utils :as chrome]
-   [sodium.re-utils :refer [<sub >evt event->fn sub->fn]]
-   [sodium.utils :as utils]))
+   [iron.chrome-utils :as chrome]
+   [iron.re-utils :refer [<sub >evt event->fn sub->fn]]
+   [iron.utils :as utils]))
 
 
 (s/def ::cache (s/nilable (s/keys)))

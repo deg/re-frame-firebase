@@ -1,6 +1,7 @@
 # Change Log
 
 ## [Unreleased]
+- Dependency change: Replace Sodium library with Iron
 - Make :-on handler more error-resistant
 
 ## [0.3.0]

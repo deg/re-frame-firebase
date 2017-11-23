@@ -4,11 +4,11 @@
 (ns com.degel.re-frame-firebase.helpers
   (:require
    [clojure.spec.alpha :as s]
-   [sodium.utils :as utils]
-   [sodium.re-utils :as re-utils]))
+   [iron.utils :as utils]
+   [iron.re-utils :as re-utils]))
 
 
-;;; Helper functions that straddle the line between this library and Sodium
+;;; Helper functions that straddle the line between this library and Iron
 ;;; utils. These may move, change, or be abandoned, as I get more comfortable
 ;;; with them.
 
