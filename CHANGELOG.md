@@ -1,6 +1,9 @@
 # Change Log
 
 ## [Unreleased]
+- _(nothing yet)_
+
+## [0.4.0]
 - Dependency change: Replace Sodium library with Iron
 - Make :-on handler more error-resistant
 
@@ -18,7 +21,8 @@
 - Support basic read/write/watch
 - Google auth
 
-[Unreleased]: https://github.com/deg/re-frame-firebase/compare/41e6695...HEAD
+[Unreleased]: https://github.com/deg/re-frame-firebase/compare/HEAD...HEAD
+[0.4.0]: https://github.com/deg/re-frame-firebase/compare/41e6695...HEAD
 [0.3.0]: https://github.com/deg/re-frame-firebase/compare/90f163f...41e6695
 [0.2.0]: https://github.com/deg/re-frame-firebase/compare/4804b1f...90f163f
 [0.1.0]: https://github.com/deg/re-frame-firebase/compare/b2f1711...4804b1f
