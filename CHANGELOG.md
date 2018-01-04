@@ -1,7 +1,7 @@
 # Change Log
 
 ## [Unreleased]
-- _(nothing yet)_
+- Update Clojure dependency
 
 ## [0.4.0]
 - Dependency change: Replace Sodium library with Iron
