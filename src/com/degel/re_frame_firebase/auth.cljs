@@ -1,6 +1,8 @@
 (ns com.degel.re-frame-firebase.auth
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require
+   [firebase :as fs]
+   [firebase.auth :as fa]
    [clojure.spec.alpha :as s]
    [com.degel.re-frame-firebase.core :as core]
    [re-frame.core :as re-frame]
@@ -25,11 +27,11 @@
 
 (defn- init-auth []
   (.onAuthStateChanged
-   (js/firebase.auth)
+   (fs/auth)
    set-user
    (core/default-error-handler))
 
-  (-> (js/firebase.auth)
+  (-> (fs/auth)
       (.getRedirectResult)
       (.then (fn on-user-credential [user-credential]
                (-> user-credential
@@ -61,7 +63,7 @@
       (.setCustomParameters auth-provider (clj->js custom-parameters)))
 
     (if-let [sign-in (sign-in-fns sign-in-method)]
-      (-> (js/firebase.auth)
+      (-> (fs/auth)
           (sign-in auth-provider)
           (.then (partial maybe-link-with-credential link-with-credential))
           (.catch (core/default-error-handler)))
@@ -72,7 +74,7 @@
 (defn google-sign-in
   [opts]
   ;; TODO: use Credential for mobile.
-  (oauth-sign-in (js/firebase.auth.GoogleAuthProvider.) opts))
+  (oauth-sign-in (fa/GoogleAuthProvider.) opts))
 
 
 (defn facebook-sign-in

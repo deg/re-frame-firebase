@@ -164,5 +164,5 @@
   (core/set-firebase-state :get-user-sub          get-user-sub
                            :set-user-event        set-user-event
                            :default-error-handler default-error-handler)
-  (js/firebase.initializeApp (clj->js firebase-app-info))
+  (fb/initializeApp (clj->js firebase-app-info))
   (auth/init-auth))
