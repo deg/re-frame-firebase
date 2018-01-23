@@ -8,7 +8,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.9.946"]
-                 [cljsjs/firebase "4.8.1-0"]
+                 [cljsjs/firebase "4.9.0-0"]
                  [re-frame "0.10.2"]
                  [reagent "0.7.0"]
                  [com.degel/iron "0.2.0"]]
