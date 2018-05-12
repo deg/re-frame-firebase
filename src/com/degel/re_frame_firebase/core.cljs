@@ -51,16 +51,18 @@
         (str/join "/" (clj->js path))))
 
 
-(defn- firebase-write-effect [{:keys [path value on-success on-failure]}]
+(defn- setter [{:keys [path value on-success on-failure]}]
   (.set (fb-ref path)
         (clj->js value)
         (success-failure-wrapper on-success on-failure)))
 
+(def ^:private firebase-write-effect setter)
 
-(defn- firebase-push-effect [{:keys [path value on-success on-failure]}]
-  (.push (fb-ref path)
-         (clj->js value)
-         (success-failure-wrapper on-success on-failure)))
+(defn- firebase-push-effect [{:keys [path value on-success on-failure] :as all}]
+  (let [key (.-key (.push (fb-ref path)))]
+    (setter (assoc all 
+              :on-success #((event->fn on-success) key)
+              :path (conj path key)))))
 
 
 (defn- firebase-once-effect [{:keys [path on-success on-failure]}]
