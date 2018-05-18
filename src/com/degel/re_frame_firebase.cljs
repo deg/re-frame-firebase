@@ -5,13 +5,12 @@
 ;;; http://timothypratley.blogspot.co.il/2016/07/reacting-to-changes-with-firebase-and.html
 ;;; and https://github.com/timothypratley/voterx
 
-
 (ns com.degel.re-frame-firebase
   (:require
-   [com.degel.re-frame-firebase.auth :as auth]
+   [re-frame.core :as re-frame]
    [com.degel.re-frame-firebase.core :as core]
-   [re-frame.core :as re-frame]))
-
+   [com.degel.re-frame-firebase.auth :as auth]
+   [com.degel.re-frame-firebase.database :as database]))
 
 ;;; Write a value to Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#set
@@ -22,7 +21,7 @@
 ;;;                   :on-success #(prn "Write succeeded")
 ;;;                   :on-failure [:firebase-error]]}
 ;;;
-(re-frame/reg-fx :firebase/write core/firebase-write-effect)
+(re-frame/reg-fx :firebase/write database/write-effect)
 
 
 ;;; Write a value to a Firebase list.
@@ -34,7 +33,7 @@
 ;;;                  :on-success #(prn "Push succeeded")
 ;;;                  :on-failure [:firebase-error]]}
 ;;;
-(re-frame/reg-fx :firebase/push core/firebase-push-effect)
+(re-frame/reg-fx :firebase/push database/push-effect)
 
 
 ;;; Asynch one-time read of a value in Firebase.
@@ -45,7 +44,7 @@
 ;;;                      :on-success [:got-my-data]
 ;;;                      :on-failure [:firebase-error]]}
 ;;;
-(re-frame/reg-fx :firebase/read-once core/firebase-once-effect)
+(re-frame/reg-fx :firebase/read-once database/once-effect)
 
 
 ;;; Dispatch a vector of firebase effects
@@ -61,9 +60,9 @@
  (fn [effects]
    (run! (fn [[event-type args]]
            (case event-type
-             :firebase/write     (core/firebase-write-effect args)
-             :firebase/push      (core/firebase-push-effect args)
-             :firebase/read-once (core/firebase-once-effect args)
+             :firebase/write     (database/write-effect args)
+             :firebase/push      (database/push-effect args)
+             :firebase/read-once (database/once-effect args)
              (js/alert "Internal error: unknown firebase effect: " event-type " (" args ")")))
          effects)))
 
@@ -75,7 +74,7 @@
 ;;; (<sub {:path [:my :data]
 ;;;        :on-failure [:firebase-error]})
 ;;;
-(re-frame/reg-sub-raw :firebase/on-value  core/firebase-on-value-sub)
+(re-frame/reg-sub-raw :firebase/on-value  database/on-value-sub)
 
 
 ;;; Login to firebase, using one of OAuth providers
@@ -164,5 +163,5 @@
   (core/set-firebase-state :get-user-sub          get-user-sub
                            :set-user-event        set-user-event
                            :default-error-handler default-error-handler)
-  (js/firebase.initializeApp (clj->js firebase-app-info))
+  (core/initialize-app firebase-app-info)
   (auth/init-auth))

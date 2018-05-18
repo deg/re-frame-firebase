@@ -1,10 +1,15 @@
+;;; Author: David Goldfarb (deg@degel.com)
+;;; Copyright (c) 2017, David Goldfarb
+
 (ns com.degel.re-frame-firebase.auth
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require
    [clojure.spec.alpha :as s]
-   [com.degel.re-frame-firebase.core :as core]
    [re-frame.core :as re-frame]
-   [iron.re-utils :refer [>evt]]))
+   [iron.re-utils :refer [>evt]]
+   [firebase.app :as firebase-app]
+   [firebase.database :as firebase-database]
+   [com.degel.re-frame-firebase.core :as core]))
 
 
 (defn- user
