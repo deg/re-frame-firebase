@@ -90,6 +90,19 @@
   (oauth-sign-in (js/firebase.auth.GithubAuthProvider.) opts))
 
 
+(defn email-sign-in [{:keys [email password]}]
+  (-> (js/firebase.auth)
+      (.signInWithEmailAndPassword email password)
+      (.then set-user)
+      (.catch (core/default-error-handler))))
+
+
+(defn email-create-user [{:keys [email password]}]
+  (-> (js/firebase.auth)
+      (.createUserWithEmailAndPassword email password)
+      (.then set-user)
+      (.catch (core/default-error-handler))))
+
 (defn sign-out []
   (-> (js/firebase.auth)
       (.signOut)
