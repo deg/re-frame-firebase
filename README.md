@@ -75,7 +75,7 @@ This initialization does two things:
 #### Credentials
 
 You need to create your Firebase project on its
-[site](https://firebase.google.com). This will supply you wiht a set of credentials: an
+[site](https://firebase.google.com). This will supply you with a set of credentials: an
 API key, domain, URL, and bucket. Mimicking the sample above, copy these into your code.
 
 Note that it is ok to have these credentials visible in your client-side code. But, you
