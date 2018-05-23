@@ -102,10 +102,10 @@
 ;;;                                    "https://www.googleapis.com/auth/calendar.readonly"]
 ;;;                           :custom-parameters {"login_hint" "user@example.com"}}}
 ;;;
-(re-frame/reg-fx :firebase/google-sign-in    auth/google-sign-in)
-(re-frame/reg-fx :firebase/facebook-sign-in  auth/facebook-sign-in)
-(re-frame/reg-fx :firebase/twitter-sign-in   auth/twitter-sign-in)
-(re-frame/reg-fx :firebase/github-sign-in    auth/github-sign-in)
+(re-frame/reg-fx :firebase/google-sign-in   auth/google-sign-in)
+(re-frame/reg-fx :firebase/facebook-sign-in auth/facebook-sign-in)
+(re-frame/reg-fx :firebase/twitter-sign-in  auth/twitter-sign-in)
+(re-frame/reg-fx :firebase/github-sign-in   auth/github-sign-in)
 
 ;;; Login to firebase using email/password authentication
 ;;; or registers a new user for email/password authentication.
