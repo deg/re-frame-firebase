@@ -184,8 +184,24 @@ Example:
                       :on-success #(js/console.log "Wrote status")
                       :on-failure [:handle-failure]}}))
                       
-;;; :firebase/push is treated the same
+;;; :firebase/push is treated the same but responds with the key of the created object
+
 ```
+
+Example (diff in bold):
+
+<pre>
+(re-frame/reg-event-fx
+  :write-status
+  (fn [{db :db} [_ status]]
+    {:firebase/<b>push</b> {:path [:status]
+                      :value status
+                      :on-success #(js/console.log <b>(str "New Status push key: " %)</b> )
+                      :on-failure [:handle-failure]}}))
+</pre>
+
+> **Note:** Events will also receive the same creation key. `(rf/reg-event-fx :event-name (fn [ctx [_ key]])`
+
 
 Re-frame-firebase also supplies `:firebase/multi` to allow multiple write and/or
 pushes from a single event:
