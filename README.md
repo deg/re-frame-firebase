@@ -112,6 +112,7 @@ re-frame-firebase supports the following Firebase authentication providers:
  - Facebook
  - Twitter
  - GitHub
+ - Email/password
  
 (PRs welcome that add to this!)
 
@@ -160,6 +161,35 @@ and also several fields that may be useful for your application, including:
 - `:uid` - The user's unique id, used by Firebase. Helpful for setting up private areas in
   the db
 
+#### Email Authentication
+
+When using email/password authentication, one usually has to register first (the alternative
+is to create an account using the [Firebase admin console](https://console.firebase.google.com/)).
+So the application could provide both a means of registering a new user, and to log in as the
+created user later on.
+When registering a new user, you should use the `:firebase/email-create-user` effect.  If the
+information is valid (e.g. the user does not exist already) then it will automatically trigger
+a sign in.
+
+For authenticating an already existing account, use the `:firebase/email-sign-in` effect.  Example:
+
+```
+;;; Create a new user
+(re-frame/reg-event-fx
+ :create-by-email
+ (fn [_ [_ email pass]]
+ {:firebase/email-create-user {:email email :password pass}}))
+
+
+;;; Sign in by email
+(re-frame/reg-event-fx
+ :sign-in-by-email
+ (fn [_ [_ email pass]]
+ {:firebase/email-sign-in {:email email :password pass}}))
+
+```
+
+The rest of the procedure is the same as for the OAuth methods.
 
 ### Writing to the database
 
