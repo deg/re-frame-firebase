@@ -164,13 +164,14 @@ and also several fields that may be useful for your application, including:
 #### Email Authentication
 
 When using email/password authentication, one usually has to register first (the alternative
-is to create an account using the Firebase admin console).  So the application could
-provide both a means of registering a new user, and to log in as the created user later on.
+is to create an account using the [Firebase admin console](https://console.firebase.google.com/)).
+So the application could provide both a means of registering a new user, and to log in as the
+created user later on.
 When registering a new user, you should use the `:firebase/email-create-user` effect.  If the
 information is valid (e.g. the user does not exist already) then it will automatically trigger
 a sign in.
 
-For authenticating an already existing account, us the `:firebase/email-sign-in` effect.  Example:
+For authenticating an already existing account, use the `:firebase/email-sign-in` effect.  Example:
 
 ```
 ;;; Create a new user
