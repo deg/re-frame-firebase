@@ -10,7 +10,8 @@
    [re-frame.core :as re-frame]
    [com.degel.re-frame-firebase.core :as core]
    [com.degel.re-frame-firebase.auth :as auth]
-   [com.degel.re-frame-firebase.database :as database]))
+   [com.degel.re-frame-firebase.database :as database]
+   [com.degel.re-frame-firebase.firestore :as firestore]))
 
 ;;; Write a value to Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#set
@@ -60,9 +61,16 @@
  (fn [effects]
    (run! (fn [[event-type args]]
            (case event-type
-             :firebase/write     (database/write-effect args)
-             :firebase/push      (database/push-effect args)
-             :firebase/read-once (database/once-effect args)
+             :firebase/write        (database/write-effect args)
+             :firebase/push         (database/push-effect args)
+             :firebase/read-once    (database/once-effect args)
+             :firestore/delete      (firestore/delete-effect args)
+             :firestore/set         (firestore/set-effect args)
+             :firestore/update      (firestore/update-effect args)
+             :firestore/add         (firestore/add-effect args)
+             :firestore/batch-write (firestore/batch-write-effect args)
+             :firestore/get         (firestore/get-effect args)
+             :firestore/on-snapshot (firestore/on-snapshot args)
              (js/alert "Internal error: unknown firebase effect: " event-type " (" args ")")))
          effects)))
 
@@ -125,6 +133,15 @@
  (fn [connected? _]
    {:firebase/connected? (= connected? true)}))
 
+
+(re-frame/reg-fx :firestore/delete firestore/delete-effect)
+(re-frame/reg-fx :firestore/set firestore/set-effect)
+(re-frame/reg-fx :firestore/update firestore/update-effect)
+(re-frame/reg-fx :firestore/add firestore/add-effect)
+(re-frame/reg-fx :firestore/batch-write firestore/batch-write-effect)
+(re-frame/reg-fx :firestore/get firestore/get-effect)
+(re-frame/reg-fx :firestore/on-snapshot firestore/on-snapshot)
+(re-frame/reg-sub-raw :firestore/on-snapshot firestore/on-snapshot-sub)
 
 
 ;;; Start library and register callbacks.

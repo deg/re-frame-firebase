@@ -4,8 +4,9 @@
 (ns com.degel.re-frame-firebase.helpers
   (:require
    [clojure.spec.alpha :as s]
+   [iron.re-utils :as re-utils]
    [iron.utils :as utils]
-   [iron.re-utils :as re-utils]))
+   [com.degel.re-frame-firebase.core :as core]))
 
 
 ;;; Helper functions that straddle the line between this library and Iron
@@ -17,6 +18,16 @@
   (-> (.val x)
       js->clj
       clojure.walk/keywordize-keys))
+
+
+(defn promise-wrapper [promise on-success on-failure]
+  {:pre [(utils/validate (s/nilable :re-frame/vec-or-fn) on-success)
+         (utils/validate (s/nilable :re-frame/vec-or-fn) on-failure)]}
+  (when on-success
+    (.then promise (re-utils/event->fn on-success)))
+  (if on-failure
+    (.catch promise (re-utils/event->fn on-failure))
+    (.catch promise (core/default-error-handler))))
 
 
 (defn success-failure-wrapper [on-success on-failure]
