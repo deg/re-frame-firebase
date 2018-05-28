@@ -10,12 +10,12 @@
                  [org.clojure/clojurescript "1.10.238"]
                  [cljsjs/firebase "5.0.2-0"]
                  [re-frame "0.10.5"]
-                 [reagent "0.8.0"]
-                 [com.degel/iron "0.3.0"]]
+                 [reagent "0.8.1"]
+                 [com.degel/iron "0.4.0"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :cljsbuild {:builds {}} ; prevent https://github.com/emezeske/lein-cljsbuild/issues/413
   :plugins [[lein-npm "0.6.2"]]
-  :npm {:dependencies [[source-map-support "0.5.5"]]}
+  :npm {:dependencies [[source-map-support "0.5.6"]]}
   :source-paths ["src" "target/classes"]
   :clean-targets ["out" "release"]
   :target-path "target")

@@ -22,33 +22,31 @@
 
 (s/def ::cache (s/nilable (s/keys)))
 
-
 (defn- fb-ref [path]
-  {:pre [(utils/validate ::specs/path path)]}
+  {:pre [(utils/validate :firebase/fb-path path)]}
   (.ref (js/firebase.database)
         (str/join "/" (clj->js path))))
 
-
-(defn- write-effect [{:keys [path value on-success on-failure]}]
+(defn- setter [{:keys [path value on-success on-failure]}]
   (.set (fb-ref path)
         (clj->js value)
         (success-failure-wrapper on-success on-failure)))
 
+(def ^:private firebase-write-effect setter)
 
-(defn- push-effect [{:keys [path value on-success on-failure]}]
-  (.push (fb-ref path)
-         (clj->js value)
-         (success-failure-wrapper on-success on-failure)))
+(defn- firebase-push-effect [{:keys [path value on-success on-failure] :as all}]
+  (let [key (.-key (.push (fb-ref path)))]
+    (setter (assoc all
+              :on-success #((event->fn on-success) key)
+              :path (conj path key)))))
 
-
-(defn- once-effect [{:keys [path on-success on-failure]}]
+(defn- firebase-once-effect [{:keys [path on-success on-failure]}]
   (.once (fb-ref path)
          "value"
          #((event->fn on-success) (js->clj-tree %))
          #((event->fn on-failure) %)))
 
-
-(defn on-value-sub [app-db [_ {:keys [path on-failure]}]]
+(defn firebase-on-value-sub [app-db [_ {:keys [path on-failure]}]]
   (if path
     (let [ref (fb-ref path)
           ;; [TODO] Potential bug alert:
@@ -64,18 +62,17 @@
           ;;        the callback closure.
           id path
           callback #(>evt [::on-value-handler id (js->clj-tree %)])]
-      (.on ref "value" callback (event->fn (or on-failure (core/default-error-handler))))
-      (ratom/make-reaction
+      (.on ref "value" callback (event->fn (or on-failure (default-error-handler))))
+      (rv/make-reaction
        (fn [] (get-in @app-db [::cache id] []))
        :on-dispose #(do (.off ref "value" callback)
                         (>evt [::on-value-handler id nil]))))
     (do
       (console :error "Received null Firebase on-value request")
-      (ratom/make-reaction
+      (rv/make-reaction
        (fn []
          ;; Minimal dummy response, to avoid blowing up caller
          nil)))))
-
 
 (re-frame/reg-event-db
  ::on-value-handler

@@ -114,6 +114,20 @@
 (re-frame/reg-fx :firebase/twitter-sign-in  auth/twitter-sign-in)
 (re-frame/reg-fx :firebase/github-sign-in   auth/github-sign-in)
 
+;;; Login to firebase using email/password authentication
+;;; or registers a new user for email/password authentication.
+;;;
+;;; Accepts a map with :email and :password
+;;;
+;;; Example:
+;;; FX:
+;;; {:firebase/email-sign-in {:email "test@github.com" :password "myverysecretpassword"}}
+;;; or to create a new user:
+;;; {:firebase/email-create-user {:email "newuser@github.com" :password "anotherverysecretpassword"}}
+;;;
+(re-frame/reg-fx :firebase/email-sign-in     auth/email-sign-in)
+(re-frame/reg-fx :firebase/email-create-user auth/email-create-user)
+
 
 ;;; Logout
 ;;;

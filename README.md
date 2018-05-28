@@ -75,7 +75,7 @@ This initialization does two things:
 #### Credentials
 
 You need to create your Firebase project on its
-[site](https://firebase.google.com). This will supply you wiht a set of credentials: an
+[site](https://firebase.google.com). This will supply you with a set of credentials: an
 API key, domain, URL, and bucket. Mimicking the sample above, copy these into your code.
 
 Note that it is ok to have these credentials visible in your client-side code. But, you
@@ -112,6 +112,7 @@ re-frame-firebase supports the following Firebase authentication providers:
  - Facebook
  - Twitter
  - GitHub
+ - Email/password
  
 (PRs welcome that add to this!)
 
@@ -160,6 +161,35 @@ and also several fields that may be useful for your application, including:
 - `:uid` - The user's unique id, used by Firebase. Helpful for setting up private areas in
   the db
 
+#### Email Authentication
+
+When using email/password authentication, one usually has to register first (the alternative
+is to create an account using the [Firebase admin console](https://console.firebase.google.com/)).
+So the application could provide both a means of registering a new user, and to log in as the
+created user later on.
+When registering a new user, you should use the `:firebase/email-create-user` effect.  If the
+information is valid (e.g. the user does not exist already) then it will automatically trigger
+a sign in.
+
+For authenticating an already existing account, use the `:firebase/email-sign-in` effect.  Example:
+
+```
+;;; Create a new user
+(re-frame/reg-event-fx
+ :create-by-email
+ (fn [_ [_ email pass]]
+ {:firebase/email-create-user {:email email :password pass}}))
+
+
+;;; Sign in by email
+(re-frame/reg-event-fx
+ :sign-in-by-email
+ (fn [_ [_ email pass]]
+ {:firebase/email-sign-in {:email email :password pass}}))
+
+```
+
+The rest of the procedure is the same as for the OAuth methods.
 
 ### Writing to the database
 
@@ -184,8 +214,24 @@ Example:
                       :on-success #(js/console.log "Wrote status")
                       :on-failure [:handle-failure]}}))
                       
-;;; :firebase/push is treated the same
+;;; :firebase/push is treated the same but responds with the key of the created object
+
 ```
+
+Example (diff in bold):
+
+<pre>
+(re-frame/reg-event-fx
+  :write-status
+  (fn [{db :db} [_ status]]
+    {:firebase/<b>push</b> {:path [:status]
+                      :value status
+                      :on-success #(js/console.log <b>(str "New Status push key: " %)</b> )
+                      :on-failure [:handle-failure]}}))
+</pre>
+
+> **Note:** Events will also receive the same creation key. `(rf/reg-event-fx :event-name (fn [ctx [_ key]])`
+
 
 Re-frame-firebase also supplies `:firebase/multi` to allow multiple write and/or
 pushes from a single event:
