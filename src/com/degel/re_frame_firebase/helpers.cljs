@@ -39,5 +39,4 @@
     (fn [err]
       (cond (nil? err) (when on-success (on-success))
             on-failure (on-failure err)
-            :else      ;; [TODO] This should use default error handler
-                       (js/console.error "Firebase error:" err)))))
+            :else      ((core/default-error-handler) err)))))

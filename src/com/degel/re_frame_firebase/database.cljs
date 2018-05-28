@@ -2,15 +2,12 @@
 ;;; Copyright (c) 2017, David Goldfarb
 
 (ns com.degel.re-frame-firebase.database
-  (:require-macros [reagent.ratom :refer [reaction]])
   (:require
    [clojure.spec.alpha :as s]
    [clojure.string :as str]
    [re-frame.core :as re-frame]
    [re-frame.loggers :refer [console]]
-   [reagent.core :as reagent]
    [reagent.ratom :as ratom :refer [make-reaction]]
-   [iron.chrome-utils :as chrome]
    [iron.re-utils :refer [<sub >evt event->fn sub->fn]]
    [iron.utils :as utils]
    [firebase.app :as firebase-app]
@@ -32,21 +29,21 @@
         (clj->js value)
         (success-failure-wrapper on-success on-failure)))
 
-(def ^:private firebase-write-effect setter)
+(def ^:private write-effect setter)
 
-(defn- firebase-push-effect [{:keys [path value on-success on-failure] :as all}]
+(defn- push-effect [{:keys [path value on-success on-failure] :as all}]
   (let [key (.-key (.push (fb-ref path)))]
     (setter (assoc all
               :on-success #((event->fn on-success) key)
               :path (conj path key)))))
 
-(defn- firebase-once-effect [{:keys [path on-success on-failure]}]
+(defn- once-effect [{:keys [path on-success on-failure]}]
   (.once (fb-ref path)
          "value"
          #((event->fn on-success) (js->clj-tree %))
          #((event->fn on-failure) %)))
 
-(defn firebase-on-value-sub [app-db [_ {:keys [path on-failure]}]]
+(defn- on-value-sub [app-db [_ {:keys [path on-failure]}]]
   (if path
     (let [ref (fb-ref path)
           ;; [TODO] Potential bug alert:

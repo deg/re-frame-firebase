@@ -8,7 +8,7 @@
    [re-frame.core :as re-frame]
    [iron.re-utils :refer [>evt]]
    [firebase.app :as firebase-app]
-   [firebase.database :as firebase-database]
+   [firebase.auth :as firebase-auth]
    [com.degel.re-frame-firebase.core :as core]))
 
 

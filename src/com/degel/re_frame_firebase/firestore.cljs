@@ -33,11 +33,9 @@
       (recur (.-parent ref) (conj result (.-id ref)))
       (vec result))))
 
-
 (defn SnapshotMetadata->clj [metadata]
   {:from-cache (.-fromCache metadata)
    :has-pending-writes (.-hasPendingWrites metadata)})
-
 
 (defn DocumentSnapshot->clj
   ([doc]
@@ -54,7 +52,6 @@
     :ref (PathReference->clj (.-ref doc))
     :object (when expose-objects doc)}))
 
-
 (defn DocumentChange->clj
   ([change] (DocumentChange->clj change nil))
   ([change snapshot-options] (DocumentChange->clj change snapshot-options nil))
@@ -64,7 +61,6 @@
     :old-index (.-oldIndex change)
     :type (.-type change)
     :object (when expose-objects change)}))
-
 
 (defn QuerySnapshot->clj
   ([query]
@@ -87,20 +83,17 @@
                      []))
     :object (when expose-objects query)}))
 
-
 (defn- document-parser-wrapper [callback snapshot-options expose-objects]
   {:pre [(utils/validate (s/nilable :re-frame/vec-or-fn) callback)]}
   (when callback
     #((re-utils/event->fn callback)
       (DocumentSnapshot->clj % snapshot-options expose-objects false))))
 
-
 (defn- collection-parser-wrapper [callback snapshot-options doc-changes expose-objects]
   {:pre [(utils/validate (s/nilable :re-frame/vec-or-fn) callback)]}
   (when callback
     #((re-utils/event->fn callback)
       (QuerySnapshot->clj % snapshot-options doc-changes expose-objects))))
-
 
 (defn- reference-parser-wrapper [callback]
   {:pre [(utils/validate (s/nilable :re-frame/vec-or-fn) callback)]}
@@ -111,7 +104,6 @@
 (defn- deleter
   ([path] (.delete (clj->DocumentReference path)))
   ([instance path] (.delete instance (clj->DocumentReference path))))
-
 
 (defn- setter
   ([path data set-options]
