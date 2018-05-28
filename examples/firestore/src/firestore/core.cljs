@@ -4,16 +4,10 @@
             [com.degel.re-frame-firebase :as firebase]
             [iron.re-utils :as re-utils :refer [<sub >evt event->fn sub->fn]]
             [clojure.string :as str]
-            [clojure.pprint :refer [pprint]]))
+            [clojure.pprint :refer [pprint]
+            [firestore.private :as private]]))
 
 ;; Global stuff
-(defonce firebase-app-info {:apiKey "***REMOVED***"
-                            :authDomain "***REMOVED***"
-                            :databaseURL "***REMOVED***"
-                            :projectId "***REMOVED***"
-                            :storageBucket "***REMOVED***.appspot.com"
-                            :messagingSenderId "***REMOVED***"})
-
 (re-frame/reg-event-db :set-user (fn [db [_ user]] (assoc db :user user)))
 
 (re-frame/reg-sub :user (fn [db _] (:user db)))
@@ -179,7 +173,7 @@
 
 (defn ^:export run
   []
-  (firebase/init :firebase-app-info firebase-app-info
+  (firebase/init :firebase-app-info private/firebase-app-info
                  :get-user-sub      [:user]
                  :set-user-event    [:set-user])
   (reagent/render [ui]
