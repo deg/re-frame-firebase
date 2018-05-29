@@ -4,8 +4,8 @@
             [com.degel.re-frame-firebase :as firebase]
             [iron.re-utils :as re-utils :refer [<sub >evt event->fn sub->fn]]
             [clojure.string :as str]
-            [clojure.pprint :refer [pprint]
-            [firestore.private :as private]]))
+            [clojure.pprint :refer [pprint]]
+            [firestore.api-keys :as api-keys]))
 
 ;; Global stuff
 (re-frame/reg-event-db :set-user (fn [db [_ user]] (assoc db :user user)))
@@ -77,7 +77,7 @@
 (re-frame/reg-event-fx
   :example-2-addsamples
   (fn [_ _]
-    {:firestore/batch-write
+    {:firestore/write-batch
       {:operations
        [[:firestore/set {:path [:cities "SF"] :data {:name "San Francisco" :state "CA" :country "USA" :capital false :population 860000}}]
         [:firestore/set {:path [:cities "LA"] :data {:name "Los Angeles" :state "CA" :country "USA" :capital false :population 3900000}}]
@@ -132,9 +132,9 @@
    [:h2 "Example 2"]
    [:div [:button {:on-click #(>evt [:example-2-addsamples])} "Add Samples"]
          [:button {:on-click #(>evt [:example-2-addrandom])} "Add Random"]
+         [:button {:on-click #(>evt [:example-2-get {:path-collection [:cities]}])} "Get all"]
          [:button {:on-click #(>evt [:example-2-deleteall])} "Delete All"]
          [:button {:on-click #(>evt [:example-2-listen])} "Start listening to changes (check console)"]
-         [:button {:on-click #(>evt [:example-2-get {:path-collection [:cities]}])} "Get all"]
          [:button {:on-click #(>evt [:example-2-get {:path-collection [:cities]
                                                      :where [[:capital :== true]]}])}
                   "Get capitals"]
@@ -153,9 +153,7 @@
          [:button {:on-click #(>evt [:example-2-get {:path-collection [:cities] :expose-objects true}])}
                   "Get all exposing objects"]
          [:button {:on-click #(>evt [:example-2-get {:path-document [:cities "LA"] :expose-objects true}])}
-                  "Get LA exposing objects"]
-         [:button {:on-click #(>evt [:example-2-get {:path-collection [:cities] :expose-objects true}])}
-                  "Get all "]]
+                  "Get LA exposing objects"]]
    [:div (code "clojure" (<sub [:example-2-value]) "Query results will appear here (click \"Get all\" to start):")]])
 
 ;; Entry Point
@@ -173,7 +171,7 @@
 
 (defn ^:export run
   []
-  (firebase/init :firebase-app-info private/firebase-app-info
+  (firebase/init :firebase-app-info api-keys/firebase-app-info
                  :get-user-sub      [:user]
                  :set-user-event    [:set-user])
   (reagent/render [ui]

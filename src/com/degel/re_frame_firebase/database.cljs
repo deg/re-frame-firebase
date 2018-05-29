@@ -59,14 +59,14 @@
           ;;        the callback closure.
           id path
           callback #(>evt [::on-value-handler id (js->clj-tree %)])]
-      (.on ref "value" callback (event->fn (or on-failure (default-error-handler))))
-      (rv/make-reaction
+      (.on ref "value" callback (event->fn (or on-failure (core/default-error-handler))))
+      (make-reaction
        (fn [] (get-in @app-db [::cache id] []))
        :on-dispose #(do (.off ref "value" callback)
                         (>evt [::on-value-handler id nil]))))
     (do
       (console :error "Received null Firebase on-value request")
-      (rv/make-reaction
+      (make-reaction
        (fn []
          ;; Minimal dummy response, to avoid blowing up caller
          nil)))))

@@ -50,7 +50,6 @@
 
 ;;; Dispatch a vector of firebase effects
 ;;;
-;;;
 ;;; Example FX:
 ;;; {:firebase/multi [[:firebase/write {:path ,,,}]
 ;;;                   [:firebase/push {:path ,,,}]
@@ -68,7 +67,7 @@
              :firestore/set         (firestore/set-effect args)
              :firestore/update      (firestore/update-effect args)
              :firestore/add         (firestore/add-effect args)
-             :firestore/batch-write (firestore/batch-write-effect args)
+             :firestore/write-batch (firestore/write-batch-effect args)
              :firestore/get         (firestore/get-effect args)
              :firestore/on-snapshot (firestore/on-snapshot args)
              (js/alert "Internal error: unknown firebase effect: " event-type " (" args ")")))
@@ -78,9 +77,10 @@
 ;;; Watch a value in Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#on
 ;;;
-;;; Subscription:
-;;; (<sub {:path [:my :data]
-;;;        :on-failure [:firebase-error]})
+;;; Example Subscription:
+;;; (re-frame/subscribe
+;;;   [:firebase/on-value {:path [:my :data]
+;;;                        :on-failure [:firebase-error]}])
 ;;;
 (re-frame/reg-sub-raw :firebase/on-value  database/on-value-sub)
 
@@ -102,8 +102,7 @@
 ;;;       Twitter:  https://firebase.google.com/docs/reference/js/firebase.auth.TwitterAuthProvider#setCustomParameters
 ;;;       GitHub:   https://firebase.google.com/docs/reference/js/firebase.auth.GithubAuthProvider#setCustomParameters
 ;;;
-;;; Example usage:
-;;; FX:
+;;; Example FX:
 ;;; {firebase/google-sign-in {:sign-in-method :popup
 ;;;                           :scopes ["https://www.googleapis.com/auth/contacts.readonly"
 ;;;                                    "https://www.googleapis.com/auth/calendar.readonly"]
@@ -114,14 +113,15 @@
 (re-frame/reg-fx :firebase/twitter-sign-in  auth/twitter-sign-in)
 (re-frame/reg-fx :firebase/github-sign-in   auth/github-sign-in)
 
+
 ;;; Login to firebase using email/password authentication
 ;;; or registers a new user for email/password authentication.
 ;;;
 ;;; Accepts a map with :email and :password
 ;;;
-;;; Example:
-;;; FX:
+;;; Example FX:
 ;;; {:firebase/email-sign-in {:email "test@github.com" :password "myverysecretpassword"}}
+;;;
 ;;; or to create a new user:
 ;;; {:firebase/email-create-user {:email "newuser@github.com" :password "anotherverysecretpassword"}}
 ;;;
@@ -131,11 +131,10 @@
 
 ;;; Logout
 ;;;
-;;; FX:
+;;; Example FX:
 ;;; {firebase/sign-out []}
 ;;;
 (re-frame/reg-fx :firebase/sign-out auth/sign-out)
-
 
 
 ;;; Monitor connection status
@@ -148,13 +147,157 @@
    {:firebase/connected? (= connected? true)}))
 
 
-(re-frame/reg-fx :firestore/delete firestore/delete-effect)
+;;; Set a document to Firestore.
+;;; See https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#se
+;;;
+;;; Key arguments:
+;;; - :path        Vector of keywords and/or strings representing the path to the document.
+;;; - :data        Map corresponding to the document.
+;;; - :set-options Map containing additional options, see firestore/clj->SetOptions.
+;;; - :on-success  Function or re-frame event vector to be dispatched.
+;;; - :on-failure  Function or re-frame event vector to be dispatched.
+;;;
+;;; Example FX:
+;;; {:firestore/set :path [:my-collection "my-document"]
+;;;                 :data {:field1 "value1"
+;;;                        :field2 {:inner1 "a" :inner2 "b"}}
+;;;                 :set-options {:merge false
+;;;                               :merge-fields [:field1 [:field2 :inner1]]}
+;;;                 :on-success [:success-event]
+;;;                 :on-failure #(prn "Error:" %)}
+;;;
 (re-frame/reg-fx :firestore/set firestore/set-effect)
+
+
+;;; Update a document to Firestore.
+;;; See https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#update
+;;;
+;;; Key arguments: :path, :data, :on-success, :on-failure
+;;;
 (re-frame/reg-fx :firestore/update firestore/update-effect)
+
+
+;;; Delete a document from Firestore.
+;;; See https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#delete
+;;;
+;;; Key arguments: :path, :on-success, :on-failure
+;;;
+(re-frame/reg-fx :firestore/delete firestore/delete-effect)
+
+
+;;; Execute multiple write operations using Firestore's WriteBatch
+;;; See https://firebase.google.com/docs/reference/js/firebase.firestore.WriteBatch
+;;;
+;;; WriteBatches only support :firestore/set, :firestore/update and :firestore/delete.
+;;; Key arguments:
+;;; - :operations  Vector of effect maps for each of the wanted operations.
+;;; - :on-success  You should supply a single callback function/events here for all of the operations.
+;;; - :on-failure
+;;;
+;;; Example FX:
+;;; {:firestore/batch-write
+;;;  {:operations
+;;;   [[:firestore/set {:path [:cities "SF"] :data {:name "San Francisco" :state "CA"}}]
+;;;    [:firestore/set {:path [:cities "LA"] :data {:name "Los Angeles" :state "CA"}}]
+;;;    [:firestore/set {:path [:cities "DC"] :data {:name "Washington, D.C." :state nil}}]]
+;;;   :on-success #(prn "Cities added to database.")
+;;;   :on-failure #(prn "Couldn't add cities to database. Error:" %)}}
+;;;
+(re-frame/reg-fx :firestore/write-batch firestore/write-batch-effect)
+
+
+;;; Add a document to a Firestore collection.
+;;;
+;;; Key arguments: :path, :data, :on-success, :on-failure
+;;;
+;;; - :path       Should be a path to a collection.
+;;; - :on-success Will be provided with a vector of strings representing the path to the created document.
+;;;
+;;; Example FX:
+;;; {:firestore/add {:path [:my-collection]
+;;;                  :data my-data
+;;;                  :on-success #(prn "Added document ID:" (last %))}}
+;;;
 (re-frame/reg-fx :firestore/add firestore/add-effect)
-(re-frame/reg-fx :firestore/batch-write firestore/batch-write-effect)
+
+
+;;; Get a document or collection query from Firestore.
+;;; See https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#get
+;;; See https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#get
+;;; See https://firebase.google.com/docs/reference/js/firebase.firestore.Query
+;;;
+;;; When querying for a document, you can supply the following key arguments:
+;;; - :path-document    The same vector of keywords/strings as other effects.
+;;; - :get-options      Map containing additional options. See firestore/clj->GetOptions.
+;;; - :snapshot-options Map to be passed when retrieving data from Snapshots.
+;;;                     See firestore/clj->SnapshotOpions.
+;;; - :expose-objects   When set to true, the original Snapshot will be attached
+;;;                     under the :object key, see firestore/DocumentSnapshot->clj.
+;;; - :on-success       The clojure object will be passed as an argument to the event or fn.
+;;; - :on-failure
+;;;
+;;; When querying for a collection, you can supply the following key arguments:
+;;; - :path-collection
+;;; - :get-options
+;;; - :where          A seq of triples [field-path op value] where op should be
+;;;                   :>, :>=, :< :<=, or :==. You can also provide strings like "<=".
+;;; - :order-by       A seq of pairs [field-path direction] where direction should
+;;;                   either be :asc or :desc. Ascending is the default.
+;;;                   You can also provide strings like "desc".
+;;; - :limit          Limit the number of documents to the specified number.
+;;; - :start-at, :start-after, :end-at, :end-before
+;;;                   Limit the query at the provided document. Either by providing
+;;;                   a seq with a single DocumentSnapshot or multiple field values
+;;;                   in the same order as :order-by.
+;;; - :doc-changes    If set to true, a vector of parsed DocumentChanges will be
+;;;                   provided under :doc-changes. See firestore/DocumentChange->clj.
+;;; - :snapshot-options
+;;; - :snapshot-listen-options Map to be passed when retrieving doc changes.
+;;;                            See firestore/SnapshotListenOptions->clj.
+;;; - :expose-objects See firestore/QuerySnapshot->clj.
+;;; - :on-success, :on-failure
+;;;
+;;; Example FX:
+;;; {:firestore/get {:path-document [:my-collection :my-document]
+;;;                  :expose-objects false
+;;;                  :on-success #(prn "Objects's contents:" (:data %))}}
+;;; {:firestore/get {:path-collection [:cities]
+;;;                  :where [[:state :>= "CA"]
+;;;                          [:population :< 1000000]]
+;;;                  :limit 1000
+;;;                  :order-by [[:state :desc]
+;;;                             [:population :desc]]
+;;;                  :start-at ["CA" 1000]
+;;;                  :doc-changes false
+;;;                  :on-success #(prn "Number of documents:" (:size %))}}
+;;;
 (re-frame/reg-fx :firestore/get firestore/get-effect)
-(re-frame/reg-fx :firestore/on-snapshot firestore/on-snapshot)
+
+
+;;; Set up a listener for changes in a Firestore collection/document query.
+;;; See https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#onSnapshot
+;;; See https://firebase.google.com/docs/reference/js/firebase.firestore.Query#onSnapshot
+;;;
+;;; You can provide the same key-arguments as to :firestore/get, except for :get-options,
+;;; :on-success and :on-failure. Instead, you can/should provide the following:
+;;; - :snapshot-listen-options Map containing additional options.
+;;;                            See firestore/clj->SnapshotListenOptions.
+;;; - :on-next  Event/function to be called every time a change happens.
+;;;             The clojure object will be passed as an argument to the event or fn.
+;;; - :on-error
+;;;
+(re-frame/reg-fx :firestore/on-snapshot firestore/on-snapshot-effect)
+
+
+;;; Subscribe to a Firestore collection/document query.
+;;;
+;;; Takes the same arguments as :firestore/on-snapshot effect, except for :on-next,
+;;; as it is meant to be used as a subscription.
+;;;
+;;; Example Subscription:
+;;; (re-frame/subscribe
+;;;   [:firestore/on-snapshot {:path-document [:my :document]}])
+;;;
 (re-frame/reg-sub-raw :firestore/on-snapshot firestore/on-snapshot-sub)
 
 
@@ -170,7 +313,9 @@
 ;;;    {:apiKey "MY-KEY-MY-KEY-MY-KEY-MY-KEY"
 ;;;     :authDomain "my-app.firebaseapp.com"
 ;;;     :databaseURL "https://my-app.firebaseio.com"
-;;;     :storageBucket "my-app.appspot.com"}
+;;;     :projectId: "my-app"
+;;;     :storageBucket "my-app.appspot.com"
+;;;     :messagingSenderId: "000000000000"}
 ;;;
 ;;; - :set-user-event - Function or re-frame event that will be called back
 ;;;     to receive and store the user object from us, when login succeeds.
