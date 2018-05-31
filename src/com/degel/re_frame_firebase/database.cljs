@@ -20,7 +20,7 @@
 (s/def ::cache (s/nilable (s/keys)))
 
 (defn- fb-ref [path]
-  {:pre [(utils/validate :firebase/fb-path path)]}
+  {:pre [(utils/validate ::specs/path path)]}
   (.ref (js/firebase.database)
         (str/join "/" (clj->js path))))
 
