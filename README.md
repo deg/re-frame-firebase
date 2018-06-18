@@ -48,7 +48,7 @@ subscriptions.
 Initialize the library in your app initialization, probably just before you call `(mount-root)`.
 
 
-```
+```clojure
 ;;; From https://console.firebase.google.com/u/0/project/trilystro/overview - "Add Firebase to your web app"
 (defonce firebase-app-info
   {:apiKey "YOUR-KEY-HERE"
@@ -92,7 +92,7 @@ It communicates with your code via three callbacks that you define in `firebase/
 normally a re-frame subscription vector, while the latter two are re-frame event
 vectors. As is typical in re-frame, info will be passed by appending it to the the vector.
 
-Note that re-frame-firebase uses the [Sodium](https://github.com/deg/sodium) library,
+Note that re-frame-firebase uses the [Iron](https://github.com/deg/iron) library,
 which supports passings functions instead of re-frame subscriptions or events. Each of
 these callbacks can, therefore, also be plain functions.
 
@@ -125,7 +125,7 @@ and and one to store the user information returned to you from the library. You 
 need to write a subscription to return the user information to the library.  For
 example:
 
-```
+```clojure
 ;;; Simple sign-in event. Just trampoline down to the re-frame-firebase
 ;;; fx handler.
 (re-frame/reg-event-fx
@@ -173,7 +173,7 @@ a sign in.
 
 For authenticating an already existing account, use the `:firebase/email-sign-in` effect.  Example:
 
-```
+```clojure
 ;;; Create a new user
 (re-frame/reg-event-fx
  :create-by-email
@@ -205,7 +205,7 @@ Each takes parameters:
 
 Example:
 
-```
+```clojure
 (re-frame/reg-event-fx
   :write-status
   (fn [{db :db} [_ status]]
@@ -255,7 +255,7 @@ handler, not a subscription. This is because a one-time read is a sink not a
 source. Your application actively requests a value. The response then returns,
 triggering another event. Conceptually, this is very much like an http request.
 
-```
+```clojure
 (re-frame/reg-event-fx
   :read-motd
   (fn [{db :db} [_ status]]
@@ -266,7 +266,7 @@ triggering another event. Conceptually, this is very much like an http request.
 
 Firebase '`:on`' subscriptions are handled as re-frame subscriptions:
 
-```
+```clojure
 (re-frame/subscribe [:firebase/on-value {:path [:latest-message]}])
 ```
 
