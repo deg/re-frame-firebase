@@ -5,4 +5,10 @@
   (:require
    [clojure.spec.alpha :as s]))
 
-(s/def :firebase/fb-path (s/coll-of (s/or :string string? :keyword keyword?) :into []))
+;; Database
+(s/def ::path (s/coll-of (s/or :string string? :keyword keyword?) :into []))
+
+;; Firestore
+(s/def ::path-collection (s/and ::path #(odd? (count %))))
+
+(s/def ::path-document (s/and ::path #(even? (count %))))

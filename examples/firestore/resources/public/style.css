@@ -1,0 +1,22 @@
+body {
+    font-family: HelveticaNeue, Helvetica;
+}
+
+.container {
+  width: 80%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin: auto;
+}
+
+pre {
+  border: 1px solid;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+button {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-right: 5px;
+}

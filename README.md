@@ -113,7 +113,7 @@ re-frame-firebase supports the following Firebase authentication providers:
  - Twitter
  - GitHub
  - Email/password
- 
+
 (PRs welcome that add to this!)
 
 Before an authentication provider can be used, it has to be enabled and configured in
@@ -213,7 +213,7 @@ Example:
                       :value status
                       :on-success #(js/console.log "Wrote status")
                       :on-failure [:handle-failure]}}))
-                      
+
 ;;; :firebase/push is treated the same but responds with the key of the created object
 
 ```
@@ -270,7 +270,7 @@ Firebase '`:on`' subscriptions are handled as re-frame subscriptions:
 (re-frame/subscribe [:firebase/on-value {:path [:latest-message]}])
 ```
 
-The firebase subscription will remain active only while the re-base subscription is
+The firebase subscription will remain active only while the re-frame subscription is
 active. Effectively, this is when any variable bound to the subscription remains in
 scope.
 
@@ -317,7 +317,136 @@ the results locally.
 ([re-frame-storage-fx](https://github.com/deg/re-frame-storage-fx)
 may be useful for this).
 
-## Sample project
+
+### Firestore
+
+Firestore is a beta database included in Firebase. re-frame-firebase exposes
+the Firestore SDK in a very similar way it does to the Realtime Database.
+It uses effects for most things, and a subscription for data.
+However, Firestore has a more complex structuring of data and querying system,
+using collections and documents.
+Thus, more options are provided and the returned data has more information attached
+to it besides a JSON object.
+
+We replace/wrap all JS objects into clojure-style maps (using-hyphens instead of camelCase).
+Both the responses from Firestore and the parameters passed to it.
+
+You can find a simple introduction through examples below, but all the options
+are documented in [re\_frame\_firebase.cljs](src/com/degel/re_frame_firebase.cljs).
+
+There are also some well-documented public functions in the beginning of
+[firestore.cljs](src/com/degel/re_frame_firebase/firestore.cljs). Most users
+won't find them useful except for understanding how re-frame-firebase interacts
+with the Firebase SDK. However, if you find yourself needing to use Firestore's
+JS objects directly, you might find those useful.
+
+#### Set a document (`:firestore/set` effect)
+
+You should provide a vector of keywords and/or strings representing the path
+to the document under the `:path` argument. Also a clojure map representing
+the document data under the `:data` argument. Aditiona
+
+```clojure
+{:firestore/set :path [:my-collection "my-document"]
+                :data {:field1 "value1"
+                       :field2 {:inner1 "a" :inner2 "b"}}
+                :set-options {:merge false
+                              :merge-fields [:field1 [:field2 :inner1]]}
+                :on-success [:success-event]
+                :on-failure #(prn "Error:" %)}
+```
+
+#### Update a document (`:firestore/update` effect)
+
+Works the same way as `:firestore/set`, except it doesn't take a `:set-options` parameter.
+
+#### Delete a document (`:firestore/delete` effect)
+
+Works the same way as `:firestore/set`, except it doesn't take `:data` and `:set-options` parameters.
+
+#### Execute multiple write operations using Firestore's WriteBatch (`:firestore/write-batch` effect)
+
+WriteBatches only support :firestore/set, :firestore/update and :firestore/delete.
+
+You should provide a vector of effect maps for each of the wanted operations under
+the `:operations` argument.
+
+```clojure
+{:firestore/batch-write
+ {:operations
+  [[:firestore/set {:path [:cities "SF"] :data {:name "San Francisco" :state "CA"}}]
+   [:firestore/set {:path [:cities "LA"] :data {:name "Los Angeles" :state "CA"}}]
+   [:firestore/set {:path [:cities "DC"] :data {:name "Washington, D.C." :state nil}}]]
+  :on-success #(prn "Cities added to database.")
+  :on-failure #(prn "Couldn't add cities to database. Error:" %)}}
+```
+
+Note you can also batch firestore effects through `:firebase/multi`. However,
+`:firestore/write-batch` sends a single request to the server, thus it is faster.
+`:firebase/multi`, on the other hand, supports all `:firestore` effects
+(not only write ones), but it works by dispatching the effects individually.
+
+#### Add a document to a Firestore collection (`:firestore/add` effect).
+
+Works the same way as the previous effects, but `:on-success` will be provided
+with a vector of strings representing the path to the created document.
+
+```clojure
+{:firestore/add {:path [:my-collection]
+                 :data my-data
+                 :on-success #(prn "Added document ID:" (last %))}}
+```
+
+#### Get a document or collection query from Firestore (`:firestore/get` effect).
+
+You should provide a vector of keywords/strings representing the path under either
+`:path-document` or `:path-collection`. The `:on-success` callback will be provided
+with the query result as an argument. The data will be transformed into a clojure
+object and the keys will be in clojure-style (using-hyphens instead of camelCase).
+
+Querying is full of options, you should check all of them documented in [re\_frame\_firebase.cljs](src/com/degel/re_frame_firebase.cljs).
+
+```clojure
+{:firestore/get {:path-document [:my-collection :my-document]
+                 :expose-objects false
+                 :on-success #(prn "Objects's contents:" (:data %))}}
+```
+
+```clojure
+{:firestore/get {:path-collection [:cities]
+                 :where [[:state :>= "CA"]
+                         [:population :< 1000000]]
+                 :limit 1000
+                 :order-by [[:state :desc]
+                            [:population :desc]]
+                 :start-at ["CA" 1000]
+                 :doc-changes false
+                 :on-success #(prn "Number of documents:" (:size %))}}
+```
+
+#### Set up a listener for changes in a Firestore collection/document query (`:firestore/on-snapshot` effect)
+
+You can use the `:firestore/on-snapshot` effect for this. It accepts most of
+the arguments from `:firestore/get`. You should provide `:on-next` instead of
+`:on-success`, which will be called every time a change happens with the retrieved
+data as argument. You should pass `:on-error` instead of `:on-failure`.
+(re-frame/reg-fx :firestore/on-snapshot firestore/on-snapshot-effect)
+
+#### Subscribe to a Firestore collection/document query (`:firestore/on-snapshot` subscription)
+
+Takes the same arguments as `:firestore/on-snapshot` effect, except for `:on-next`,
+as it is meant to be used as a subscription.
+
+```clojure
+(re-frame/subscribe
+  [:firestore/on-snapshot {:path-document [:my :document]}])
+```
+
+
+## Examples and projects
+
+There are examples provided in the [examples](examples) folder. It is great to
+check them in order to get used to the API.
 
 I have a toy project, [Trilystro](https://github.com/deg/trilystro) which
 uses re-frame-firebase. It is an evolving work, so I cannot offer any
