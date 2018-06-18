@@ -4,7 +4,7 @@ This tiny application is meant to test and show you how to use the firestore API
 
 All the code is in one namespace: `src/firestore/core.cljs`.
 
-### Run It And Change It   
+### Run It And Change It
 
 Steps:
 

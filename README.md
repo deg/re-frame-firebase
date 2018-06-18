@@ -320,16 +320,15 @@ may be useful for this).
 
 ### Firestore
 
-Firestore is a beta database included in Firebase. re-frame-firebase exposes
-the Firestore SDK in a very similar way it does to the Realtime Database.
-It uses effects for most things, and a subscription for data.
-However, Firestore has a more complex structuring of data and querying system,
-using collections and documents.
-Thus, more options are provided and the returned data has more information attached
-to it besides a JSON object.
+[Firestore](https://firebase.google.com/docs/firestore/) is a beta database included in
+Firebase. re-frame-firebase exposes the Firestore SDK in a very similar way it does to
+the Realtime Database.  It uses effects for most things, and a subscription for data.
+However, Firestore has a more complex structuring of data and querying system, using
+collections and documents.  Thus, more options are provided and the returned data has
+more information attached to it besides a JSON object.
 
-We replace/wrap all JS objects into clojure-style maps (using-hyphens instead of camelCase).
-Both the responses from Firestore and the parameters passed to it.
+We replace/wrap all JS objects into clojure-style maps (using-hyphens instead of camelCase);
+both the responses from Firestore and the parameters passed to it.
 
 You can find a simple introduction through examples below, but all the options
 are documented in [re\_frame\_firebase.cljs](src/com/degel/re_frame_firebase.cljs).
@@ -343,8 +342,8 @@ JS objects directly, you might find those useful.
 #### Set a document (`:firestore/set` effect)
 
 You should provide a vector of keywords and/or strings representing the path
-to the document under the `:path` argument. Also a clojure map representing
-the document data under the `:data` argument. Aditiona
+to the document under the `:path` argument. Also provide a clojure map representing
+the document data under the `:data` argument.
 
 ```clojure
 {:firestore/set :path [:my-collection "my-document"]
@@ -404,7 +403,8 @@ You should provide a vector of keywords/strings representing the path under eith
 with the query result as an argument. The data will be transformed into a clojure
 object and the keys will be in clojure-style (using-hyphens instead of camelCase).
 
-Querying is full of options, you should check all of them documented in [re\_frame\_firebase.cljs](src/com/degel/re_frame_firebase.cljs).
+Querying is full of options. They are documented in full in
+[re\_frame\_firebase.cljs](src/com/degel/re_frame_firebase.cljs).
 
 ```clojure
 {:firestore/get {:path-document [:my-collection :my-document]
