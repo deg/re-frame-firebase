@@ -20,7 +20,9 @@
      :provider-data (.-providerData firebase-user)
      :display-name  (.-displayName firebase-user)
      :photo-url     (.-photoURL firebase-user)
-     :email         (-> firebase-user .-providerData first .-email)}))
+     :email         (let [provider-data (.-providerData firebase-user)]
+                      (when-not (empty? provider-data)
+                        (-> provider-data first .-email)))}))
 
 (defn- set-user
   [firebase-user]
@@ -105,6 +107,13 @@
 (defn email-create-user [{:keys [email password]}]
   (-> (js/firebase.auth)
       (.createUserWithEmailAndPassword email password)
+      (.then set-user)
+      (.catch (core/default-error-handler))))
+
+
+(defn anonymous-sign-in [opts]
+  (-> (js/firebase.auth)
+      (.signInAnonymously)
       (.then set-user)
       (.catch (core/default-error-handler))))
 

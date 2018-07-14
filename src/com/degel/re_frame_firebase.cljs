@@ -129,6 +129,13 @@
 (re-frame/reg-fx :firebase/email-create-user auth/email-create-user)
 
 
+;;; Login to firebase anonymously
+;;;
+;;; Parameter is not used
+;;;
+(re-frame/reg-fx :firebase/anonymous-sign-in auth/anonymous-sign-in)
+
+
 ;;; Logout
 ;;;
 ;;; Example FX:

@@ -191,6 +191,19 @@ For authenticating an already existing account, use the `:firebase/email-sign-in
 
 The rest of the procedure is the same as for the OAuth methods.
 
+### Anonymous Authentication
+
+Anonymous authentication allows persisting of information before users sign up.
+
+```clojure
+;;; Create anonymous user
+(re-frame/reg-event-fx
+ :sign-in-anonymous
+ (fn [_ _]
+ {:firebase/anonymous-sign-in nil}))
+
+```
+
 ### Writing to the database
 
 The firebase database is a tree. You can write values to nodes in a tree, or push them
@@ -473,25 +486,25 @@ lein deploy clojars
 _The rest of this section is Mies boilerplate. Probably all correct, but not necesarily relevant._
 
     Most of the following scripts require [rlwrap](http://utopia.knoware.nl/~hlub/uck/rlwrap/) (on OS X installable via brew).
-    
+
     Build your project once in dev mode with the following script and then open `index.html` in your browser.
-    
+
         ./scripts/build
-    
+
     To auto build your project in dev mode:
-    
+
         ./scripts/watch
-    
+
     To start an auto-building Node REPL:
-    
+
         ./scripts/repl
-    
+
     To get source map support in the Node REPL:
-    
+
         lein npm install
-        
+
     To start a browser REPL:
-        
+
     1. Uncomment the following lines in src/re_frame_firebase/core.cljs:
     ```clojure
     ;; (defonce conn
@@ -501,16 +514,16 @@ _The rest of this section is Mies boilerplate. Probably all correct, but not nec
     3. Browse to `http://localhost:9000` (you should see `Hello world!` in the web console)
     4. (back to step 3) you should now see the REPL prompt: `cljs.user=>`
     5. You may now evaluate ClojureScript statements in the browser context.
-        
+
     For more info using the browser as a REPL environment, see
     [this](https://github.com/clojure/clojurescript/wiki/The-REPL-and-Evaluation-Environments#browser-as-evaluation-environment).
-        
+
     Clean project specific out:
-    
+
         lein clean
-         
+
     Build a single release artifact with the following script and then open `index_release.html` in your browser.
-    
+
         ./scripts/release
 
 ## Questions
