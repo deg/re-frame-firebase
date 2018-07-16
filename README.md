@@ -204,6 +204,23 @@ Anonymous authentication allows persisting of information before users sign up.
 
 ```
 
+### Custom Authentication
+
+This relies on an external system to generate a JWT, signed with a
+private key that is generate by Firebase. See [Firebase docs][custom-auth]
+for details how to mint such a token.
+
+[custom-auth]: https://firebase.google.com/docs/auth/admin/create-custom-tokens
+
+```clojure
+;;; Sign in using a custom token
+(re-frame/reg-event-fx
+ :sign-in-custom
+ (fn [_ _]
+ {:firebase/custom-token-sign-in {:token "eyJhbGciOiJS.."}}))
+
+```
+
 ### Writing to the database
 
 The firebase database is a tree. You can write values to nodes in a tree, or push them
