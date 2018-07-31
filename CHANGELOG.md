@@ -3,6 +3,11 @@
 ## [Unreleased]
 - (no changes yet)
 
+## [0.7.0]
+Another volunteer-driven release. Thanks Mathew and Shen!
+- Support for anonymous sign-in and custom authentication
+- Doc cleanups
+
 ## [0.6.0]
 Many thanks to the project contributors. I did nothing this release but integrate the
 work from wonderful volunteers.
