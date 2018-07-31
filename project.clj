@@ -7,7 +7,7 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.312"]
+                 [org.clojure/clojurescript "1.10.339"]
                  [cljsjs/firebase "5.0.4-1"]
                  [re-frame "0.10.5"]
                  [reagent "0.8.1"]
