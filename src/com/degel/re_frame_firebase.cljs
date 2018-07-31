@@ -135,6 +135,13 @@
 ;;;
 (re-frame/reg-fx :firebase/anonymous-sign-in auth/anonymous-sign-in)
 
+;;; Login to firebase using a custom token
+;;;
+;;; Accept a map with :token, a JWT as a string
+;;;
+;;; Example FX:
+;;; {:firebase/custom-token-sign-in {:token "eyJhbGciOiJS.."}}
+(re-frame/reg-fx :firebase/custom-token-sign-in auth/custom-token-sign-in)
 
 ;;; Logout
 ;;;

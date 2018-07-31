@@ -117,6 +117,14 @@
       (.then set-user)
       (.catch (core/default-error-handler))))
 
+
+(defn custom-token-sign-in [{:keys [token]}]
+  (-> (js/firebase.auth)
+      (.signInWithCustomToken token)
+      (.then set-user)
+      (.catch (core/default-error-handler))))
+
+
 (defn sign-out []
   (-> (js/firebase.auth)
       (.signOut)
