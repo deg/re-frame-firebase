@@ -37,7 +37,8 @@ work from wonderful volunteers.
 - Support basic read/write/watch
 - Google auth
 
-[Unreleased]: https://github.com/deg/re-frame-firebase/compare/46f5630...HEAD
+[Unreleased]: https://github.com/deg/re-frame-firebase/compare/684812e...HEAD
+[0.7.0]: https://github.com/deg/re-frame-firebase/compare/46f5630...684812e
 [0.6.0]: https://github.com/deg/re-frame-firebase/compare/7192dfc...46f5630
 [0.5.0]: https://github.com/deg/re-frame-firebase/compare/0c4cb21...7192dfc
 [0.4.0]: https://github.com/deg/re-frame-firebase/compare/41e6695...0c4cb21
