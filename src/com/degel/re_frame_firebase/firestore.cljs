@@ -13,6 +13,10 @@
    [com.degel.re-frame-firebase.helpers :refer [promise-wrapper]]))
 
 
+(defn set-firestore-settings
+  [settings]
+  (.settings (js/firebase.firestore) (clj->js (or settings {}))))
+
 ;; Extra public functions
 (defn server-timestamp
   "Returns a field value to be used to store the server timestamp.

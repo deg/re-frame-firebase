@@ -4,8 +4,16 @@
             [com.degel.re-frame-firebase :as firebase]
             [iron.re-utils :as re-utils :refer [<sub >evt event->fn sub->fn]]
             [clojure.string :as str]
-            [clojure.pprint :refer [pprint]]
-            [firestore.api-keys :as api-keys]))
+            [clojure.pprint :refer [pprint]]))
+
+;; Provide your own app info
+(defonce firebase-app-info
+  {:apiKey "MY-KEY-MY-KEY-MY-KEY-MY-KEY"
+   :authDomain "my-app.firebaseapp.com"
+   :databaseURL "https://my-app.firebaseio.com"
+   :projectId "my-app"
+   :storageBucket "my-app.appspot.com"
+   :messagingSenderId "000000000000"})
 
 ;; Global stuff
 (re-frame/reg-event-db :set-user (fn [db [_ user]] (assoc db :user user)))
@@ -159,7 +167,7 @@
 ;; Entry Point
 (defn user-info
   []
-  [:div (<sub [:user])])
+  [:div (code "clojure" (with-out-str (pprint (<sub [:user]))) "User data")])
 
 (defn ui
   []
@@ -171,7 +179,9 @@
 
 (defn ^:export run
   []
-  (firebase/init :firebase-app-info api-keys/firebase-app-info
+  (firebase/init :firebase-app-info firebase-app-info
+                 ; See: https://firebase.google.com/docs/reference/js/firebase.firestore.Settings
+                 :firestore-settings {:timestampsInSnapshots true}
                  :get-user-sub      [:user]
                  :set-user-event    [:set-user])
   (reagent/render [ui]
