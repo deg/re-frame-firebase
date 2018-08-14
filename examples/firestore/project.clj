@@ -1,10 +1,10 @@
 (defproject firestore "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript  "1.10.238"]
-                 [reagent  "0.8.0"]
+                 [reagent  "0.8.1"]
                  [re-frame "0.10.5"]
-                 [com.degel/re-frame-firebase "0.6.0-SNAPSHOT"]
-                 [com.degel/iron "0.3.0"]]
+                 [com.degel/re-frame-firebase "0.7.0"]
+                 [com.degel/iron "0.4.0"]]
 
   :plugins [[lein-cljsbuild "1.1.7"]
             [lein-figwheel  "0.5.16"]]

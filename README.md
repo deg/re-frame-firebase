@@ -58,7 +58,9 @@ Initialize the library in your app initialization, probably just before you call
 
 (defn ^:export init []
   ,,,
-  (firebase/init :firebase-app-info firebase-app-info
+  (firebase/init :firebase-app-info      firebase-app-info
+                 ; See: https://firebase.google.com/docs/reference/js/firebase.firestore.Settings
+                 :firestore-settings     {:timestampsInSnapshots true}
                  :get-user-sub           [:user]
                  :set-user-event         [:set-user]
                  :default-error-handler  [:firebase-error])

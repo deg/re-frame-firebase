@@ -347,6 +347,7 @@
 ;;;   to handle any otherwise unhandled errors.
 ;;;
 (defn init [& {:keys [firebase-app-info
+                      firestore-settings
                       get-user-sub
                       set-user-event
                       default-error-handler]}]
@@ -354,4 +355,5 @@
                            :set-user-event        set-user-event
                            :default-error-handler default-error-handler)
   (core/initialize-app firebase-app-info)
+  (firestore/set-firestore-settings firestore-settings)
   (auth/init-auth))
