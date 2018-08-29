@@ -125,6 +125,37 @@
       (.catch (core/default-error-handler))))
 
 
+(defn init-recaptcha [{:keys [on-solve container-id]}]
+  (let [recaptcha (js/firebase.auth.RecaptchaVerifier.
+                   container-id
+                   (clj->js {:size     "invisible"
+                             :callback #(re-frame/dispatch on-solve)}))]
+    (swap! core/firebase-state assoc
+           :recaptcha-verifier recaptcha)))
+
+
+(defn phone-number-sign-in [{:keys [phone-number on-send]}]
+  (if-let [verifier (:recaptcha-verifier @core/firebase-state)]
+    (-> (js/firebase.auth)
+        (.signInWithPhoneNumber phone-number verifier)
+        (.then (fn [confirmation]
+                 (when on-send
+                   (re-frame/dispatch on-send))
+                 (swap! core/firebase-state assoc
+                        :recaptcha-confirmation-result confirmation)))
+        (.catch (core/default-error-handler)))
+    (.warn js/console "Initialise reCaptcha first")))
+
+
+(defn phone-number-confirm-code [{:keys [code]}]
+  (if-let [confirmation (:recaptcha-confirmation-result @core/firebase-state)]
+    (-> confirmation
+        (.confirm code)
+        (.then set-user)
+        (.catch (core/default-error-handler)))
+    (.warn js/console "reCaptcha confirmation missing")))
+
+
 (defn sign-out []
   (-> (js/firebase.auth)
       (.signOut)

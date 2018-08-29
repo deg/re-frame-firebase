@@ -223,6 +223,38 @@ for details how to mint such a token.
 
 ```
 
+### Phone Authentication
+
+This sends an SMS to a cellphone, to authenticate against the number. One complication is
+that a reCaptcha setup is required to avoid abuse. Only the invisible reCaptcha is implemented
+at the moment.
+
+See [Firebase docs][phone-auth] for details.
+
+[phone-auth]: https://firebase.google.com/docs/auth/web/phone-auth
+
+```clojure
+(re-frame/reg-event-fx
+ ::init-captcha
+ (fn [_ _]
+   {:firebase/init-recaptcha {:on-solve     [:msg "Welcome Human"]
+                              :container-id "sign-in-button"}}))
+
+
+(re-frame/reg-event-fx
+ ::phone-sign-in
+ (fn [_ [_ phone]]
+   {:firebase/phone-number-sign-in {:phone-number phone
+                                    :on-send      [:msg "SMS code sent"]}}))
+
+
+(re-frame/reg-event-fx
+ ::phone-confirm-code
+ (fn [_ [_ code]]
+   {:firebase/phone-number-confirm-code {:code code}}))
+
+```
+
 ### Writing to the database
 
 The firebase database is a tree. You can write values to nodes in a tree, or push them

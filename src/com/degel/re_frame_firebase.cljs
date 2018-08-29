@@ -143,6 +143,40 @@
 ;;; {:firebase/custom-token-sign-in {:token "eyJhbGciOiJS.."}}
 (re-frame/reg-fx :firebase/custom-token-sign-in auth/custom-token-sign-in)
 
+
+;;; Login to firebase with a phone
+;;;
+;;; Initialise recaptcha
+;;;
+;;; Accepts a map with
+;;; - :container-id - DOM id (typically the "submit phone number" button)
+;;; - :on-solve - re-frame event vector for verification (when user is verified as human)
+;;;
+;;; Example FX:
+;;; {:firebase/init-recaptcha {:container-id "sign-in-btn"
+;;;                            :on-solve     [:welcome-human]}}
+;;;
+;;; Phone number sign-in
+;;;
+;;; Accepts a map with
+;;; - :phone-number - a string in e164 format
+;;; - :on-send - an event vector for when code is sent
+;;;
+;;; Example FX:
+;;; {:firebase/phone-number-sign-in {:phonenumber "+27820000000"
+;;;                                  :on-send     [:notify-sms-sent]}}
+;;;
+;;; Confirm coe
+;;;
+;;; Accepts a map with :code, as sent in the SMS
+;;;
+;;; Example FX:
+;;; {:firebase/phone-number-confirm-code {:code "123456}}
+(re-frame/reg-fx :firebase/init-recaptcha            auth/init-recaptcha)
+(re-frame/reg-fx :firebase/phone-number-sign-in      auth/phone-number-sign-in)
+(re-frame/reg-fx :firebase/phone-number-confirm-code auth/phone-number-confirm-code)
+
+
 ;;; Logout
 ;;;
 ;;; Example FX:
