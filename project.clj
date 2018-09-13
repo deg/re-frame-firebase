@@ -10,7 +10,6 @@
                  [org.clojure/clojurescript "1.10.339"]
                  [cljsjs/firebase "5.0.4-1"]
                  [re-frame "0.10.5"]
-                 [reagent "0.8.1"]
                  [com.degel/iron "0.4.0"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :cljsbuild {:builds {}} ; prevent https://github.com/emezeske/lein-cljsbuild/issues/413
