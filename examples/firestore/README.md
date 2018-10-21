@@ -9,19 +9,18 @@ All the code is in one namespace: `src/firestore/core.cljs`, api-keys are in
 
 ### Firebase steps (from [here](https://github.com/firebase/quickstart-js/tree/master/firestore))
 1. Create a Firebase project in the [Firebase Console](https://console.firebase.google.com).
-2. In the Firebase console, enable Anonymous authentication on your project by doing: **Authentication > SIGN-IN METHOD > Anonymous > Enable > SAVE**
-3. In the Firebase console, enable Cloud Firestore on your project by doing: **Database > Create Database**
-4. Select testing mode for the security rules
-5. Copy/Download this repo and open this folder in a Terminal.
-6. Install the Firebase CLI if you do not have it installed on your machine:
+2. In the Firebase console, enable Cloud Firestore on your project by doing: **Database > Create Database**
+3. Select testing mode for the security rules
+4. Copy/Download this repo and open this folder in a Terminal.
+5. Install the Firebase CLI if you do not have it installed on your machine:
    ```bash
    npm -g i firebase-tools
    ```
-7. Set the CLI to use the project you created on step 1:
+6. Set the CLI to use the project you created on step 1:
    ```bash
    firebase use --add
    ```
-8. Deploy the Firestore security rules and indexes:
+7. Deploy the Firestore security rules and indexes:
    ```bash
    firebase deploy --only firestore
    ```
