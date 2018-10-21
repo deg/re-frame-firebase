@@ -2,22 +2,50 @@
 
 This tiny application is meant to test and show you how to use the firestore API.
 
-All the code is in one namespace: `src/firestore/core.cljs`.
+All the code is in one namespace: `src/firestore/core.cljs`, api-keys are in
+`src/firestore/api-keys.cljs`.
 
-## Run it and change it
+## How to run it
 
-Steps:
+### Firebase steps (from [here](https://github.com/firebase/quickstart-js/tree/master/firestore))
+1. Create a Firebase project in the [Firebase Console](https://console.firebase.google.com).
+2. In the Firebase console, enable Anonymous authentication on your project by doing: **Authentication > SIGN-IN METHOD > Anonymous > Enable > SAVE**
+3. In the Firebase console, enable Cloud Firestore on your project by doing: **Database > Create Database**
+4. Select testing mode for the security rules
+5. Copy/Download this repo and open this folder in a Terminal.
+6. Install the Firebase CLI if you do not have it installed on your machine:
+   ```bash
+   npm -g i firebase-tools
+   ```
+7. Set the CLI to use the project you created on step 1:
+   ```bash
+   firebase use --add
+   ```
+8. Deploy the Firestore security rules and indexes:
+   ```bash
+   firebase deploy --only firestore
+   ```
 
-1. Check out the re-frame repo.
-2. Open a command line.
-3. `cd` to the root of this subproject (where this README is located).
-4. Run `lein do clean, figwheel` to compile the app and start figwheel's hot-reloading.
-5. Open `http://localhost:3449/` to see the app.
+### Clojure steps
 
-While step 4 is running, any changes you make to the ClojureScript source files
+1. Copy the API keys from your firebase project console to `api-keys.cljs` (replace
+   the existing dummy values).
+2. Open a command line in this folder.
+3. Compile the app and start figwheel's hot-reloading.
+   ```bash
+   lein do clean, figwheel
+   ```
+4. Open `http://localhost:3449/` to see the app.
+
+While step 3 is running, any changes you make to the ClojureScript source files
 (in `src`) will be re-compiled and reflected in the running page immediately.
 
 ## Production version
 
-Run `lein do clean, with-profile prod compile` to compile an optimized version,
-and then open `resources/public/index.html` in a browser.
+To compile an optimized version, run:
+
+```bash
+lein do clean, with-profile prod compile
+```
+
+And then open `resources/public/index.html` in a browser.
