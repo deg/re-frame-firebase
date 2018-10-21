@@ -1,11 +1,11 @@
 (ns firestore.core
-  (:require [firestore.api-keys :refer [firebase-app-info]]
-            [reagent.core :as reagent]
+  (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [com.degel.re-frame-firebase :as firebase]
             [iron.re-utils :as re-utils :refer [<sub >evt event->fn sub->fn]]
             [clojure.string :as str]
-            [clojure.pprint :refer [pprint]]))
+            [clojure.pprint :refer [pprint]]
+            [firestore.api-keys :refer [firebase-app-info]]))
 
 ;; Global stuff
 (re-frame/reg-event-db :set-user (fn [db [_ user]] (assoc db :user user)))
