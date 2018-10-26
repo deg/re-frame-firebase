@@ -16,7 +16,7 @@ All the code is in one namespace: `src/firestore/core.cljs`, api-keys are in
    ```bash
    npm -g i firebase-tools
    ```
-6. Set the CLI to use the project you created on step 1:
+6. Set the CLI to use the project you created in step 1:
    ```bash
    firebase use --add
    ```
