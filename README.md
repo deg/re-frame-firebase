@@ -410,13 +410,13 @@ to the document under the `:path` argument. Also provide a clojure map represent
 the document data under the `:data` argument.
 
 ```clojure
-{:firestore/set :path [:my-collection "my-document"]
-                :data {:field1 "value1"
-                       :field2 {:inner1 "a" :inner2 "b"}}
-                :set-options {:merge false
-                              :merge-fields [:field1 [:field2 :inner1]]}
-                :on-success [:success-event]
-                :on-failure #(prn "Error:" %)}
+{:firestore/set {:path [:my-collection "my-document"]
+                 :data {:field1 "value1"
+                        :field2 {:inner1 "a" :inner2 "b"}}
+                 :set-options {:merge false
+                               :merge-fields [:field1 [:field2 :inner1]]}
+                 :on-success [:success-event]
+                 :on-failure #(prn "Error:" %)}}
 ```
 
 #### Update a document (`:firestore/update` effect)
