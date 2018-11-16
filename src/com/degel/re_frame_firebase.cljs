@@ -206,13 +206,13 @@
 ;;; - :on-failure  Function or re-frame event vector to be dispatched.
 ;;;
 ;;; Example FX:
-;;; {:firestore/set :path [:my-collection "my-document"]
-;;;                 :data {:field1 "value1"
-;;;                        :field2 {:inner1 "a" :inner2 "b"}}
-;;;                 :set-options {:merge false
-;;;                               :merge-fields [:field1 [:field2 :inner1]]}
-;;;                 :on-success [:success-event]
-;;;                 :on-failure #(prn "Error:" %)}
+;;; {:firestore/set {:path [:my-collection "my-document"]
+;;;                  :data {:field1 "value1"
+;;;                         :field2 {:inner1 "a" :inner2 "b"}}
+;;;                  :set-options {:merge false
+;;;                                :merge-fields [:field1 [:field2 :inner1]]}
+;;;                  :on-success [:success-event]
+;;;                  :on-failure #(prn "Error:" %)}}
 ;;;
 (re-frame/reg-fx :firestore/set firestore/set-effect)
 
