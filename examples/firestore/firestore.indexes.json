@@ -1,0 +1,46 @@
+{
+  "indexes": [
+    {
+      "collectionId": "cities",
+      "state": "READY",
+      "fields": [
+        {
+          "fieldPath": "state",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "population",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionId": "cities",
+      "state": "READY",
+      "fields": [
+        {
+          "fieldPath": "name",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionId": "cities",
+      "state": "READY",
+      "fields": [
+        {
+          "fieldPath": "name",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "state",
+          "mode": "DESCENDING"
+        }
+      ]
+    }
+  ]
+}

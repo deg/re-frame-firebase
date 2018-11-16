@@ -1,19 +1,11 @@
 (ns firestore.core
-  (:require [reagent.core :as reagent]
-            [re-frame.core :as re-frame]
-            [com.degel.re-frame-firebase :as firebase]
-            [iron.re-utils :as re-utils :refer [<sub >evt event->fn sub->fn]]
+  (:require [clojure.pprint :refer [pprint]]
             [clojure.string :as str]
-            [clojure.pprint :refer [pprint]]))
-
-;; Provide your own app info
-(defonce firebase-app-info
-  {:apiKey "MY-KEY-MY-KEY-MY-KEY-MY-KEY"
-   :authDomain "my-app.firebaseapp.com"
-   :databaseURL "https://my-app.firebaseio.com"
-   :projectId "my-app"
-   :storageBucket "my-app.appspot.com"
-   :messagingSenderId "000000000000"})
+            [reagent.core :as reagent]
+            [re-frame.core :as re-frame]
+            [iron.re-utils :as re-utils :refer [<sub >evt event->fn sub->fn]]
+            [com.degel.re-frame-firebase :as firebase]
+            [firestore.api-keys :refer [firebase-app-info]]))
 
 ;; Global stuff
 (re-frame/reg-event-db :set-user (fn [db [_ user]] (assoc db :user user)))
