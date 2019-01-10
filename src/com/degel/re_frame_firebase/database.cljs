@@ -31,6 +31,13 @@
 
 (def ^:private write-effect setter)
 
+(defn- updater [{:keys [path value on-success on-failure]}]
+  (.update (fb-ref path)
+           (clj->js value)
+           (success-failure-wrapper on-success on-success)))
+
+(def ^:private update-effect updater)
+
 (defn- push-effect [{:keys [path value on-success on-failure] :as all}]
   (let [key (.-key (.push (fb-ref path)))]
     (setter (assoc all
