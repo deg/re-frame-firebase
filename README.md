@@ -21,7 +21,7 @@ _Note: This project is not under active development, and exists primarily to mee
 immediate needs. Therefore, many Firebase features are still missing. I will probably
 only add them as I need. But, I am receptive to feature requests and happy to accept
 PRs. I would also like to thank the growing family of contributors who have added so
-much to this project. I've probably written less than half the code here! _
+much to this project. I've probably written less than half the code here!_
 
 ## Configuration
 
