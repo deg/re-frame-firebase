@@ -17,9 +17,11 @@ and [VoterX](https://github.com/timothypratley/voterx) project. I've added the p
 as a standalone project, the integration with re-frame and, I'm sure, any mistakes that
 I've not yet caught.
 
-_Note: This project is under active development, and exists primarily to meet my immediate
-needs. Therefore, many Firebase features are still missing. I will probably only add
-them as I need. But, I am receptive to feature requests and happy to accept PRs._
+_Note: This project is not under active development, and exists primarily to meet my
+immediate needs. Therefore, many Firebase features are still missing. I will probably
+only add them as I need. But, I am receptive to feature requests and happy to accept
+PRs. I would also like to thank the growing family of contributors who have added so
+much to this project. I've probably written less than half the code here! _
 
 ## Configuration
 
@@ -27,8 +29,8 @@ them as I need. But, I am receptive to feature requests and happy to accept PRs.
 [![Dependencies Status](https://versions.deps.co/deg/re-frame-firebase/status.svg)](https://versions.deps.co/deg/re-frame-firebase)
 
 - Add this project to your dependencies. The current version is
-  `[com.degel/re-frame-firebase "0.7.0"]`. Note this automatically includes firebase
-  too; currently v5.0.4-1.
+  `[com.degel/re-frame-firebase "0.8.0"]`. Note this automatically includes firebase
+  too; currently v5.7.3-1.
 - Reference the main namespace in your code: `[com.degel.re-frame-firebase :as firebase]`
 - Initialize the library in your app initialization, probably just before you call
   `(mount-root)`. See below for details.
@@ -96,7 +98,7 @@ vectors. As is typical in re-frame, info will be passed by appending it to the t
 
 Note that re-frame-firebase uses the [Iron](https://github.com/deg/iron) library,
 which supports passings functions instead of re-frame subscriptions or events. Each of
-these callbacks can, therefore, also be plain functions.
+these callbacks can therefore also be plain functions.
 
 For more details, e.g. the parameters passed to each callback, see the documentation in
 the [source](src/com/degel/re_frame_firebase.cljs).
