@@ -587,6 +587,6 @@ or you can report issues or PRs directly to this project.
 
 ## License
 
-Copyright © 2017 David Goldfarb
+Copyright © 2017-9 David Goldfarb
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
