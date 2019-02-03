@@ -29,7 +29,7 @@
         (clj->js value)
         (success-failure-wrapper on-success on-failure)))
 
-(def ^:private write-effect setter)
+(def write-effect setter)
 
 (defn- updater [{:keys [path value on-success on-failure]}]
   (.update (fb-ref path)
@@ -38,19 +38,19 @@
 
 (def ^:private update-effect updater)
 
-(defn- push-effect [{:keys [path value on-success on-failure] :as all}]
+(defn push-effect [{:keys [path value on-success on-failure] :as all}]
   (let [key (.-key (.push (fb-ref path)))]
     (setter (assoc all
               :on-success #((event->fn on-success) key)
               :path (conj path key)))))
 
-(defn- once-effect [{:keys [path on-success on-failure]}]
+(defn once-effect [{:keys [path on-success on-failure]}]
   (.once (fb-ref path)
          "value"
          #((event->fn on-success) (js->clj-tree %))
          #((event->fn on-failure) %)))
 
-(defn- on-value-sub [app-db [_ {:keys [path on-failure]}]]
+(defn on-value-sub [app-db [_ {:keys [path on-failure]}]]
   (if path
     (let [ref (fb-ref path)
           ;; [TODO] Potential bug alert:

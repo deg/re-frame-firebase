@@ -1,15 +1,15 @@
 ;;; Author: David Goldfarb (deg@degel.com)
 ;;; Copyright (c) 2017-8, David Goldfarb
 
-(defproject com.degel/re-frame-firebase "0.8.0-SNAPSHOT"
+(defproject com.degel/re-frame-firebase "0.9.0-SNAPSHOT"
   :description "A re-frame wrapper around firebase"
   :url "https://github.com/deg/re-frame-firebase"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.339"]
-                 [cljsjs/firebase "5.0.4-1"]
-                 [re-frame "0.10.5"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.439"]
+                 [cljsjs/firebase "5.7.3-1"]
+                 [re-frame "0.10.6"]
                  [com.degel/iron "0.4.0"]]
   :jvm-opts ^:replace ["-Xmx1g" "-server"]
   :cljsbuild {:builds {}} ; prevent https://github.com/emezeske/lein-cljsbuild/issues/413

@@ -251,16 +251,16 @@
   ([path] (.delete (clj->DocumentReference path)))
   ([instance path] (.delete instance (clj->DocumentReference path))))
 
-(defn- set-effect [{:keys [path data set-options on-success on-failure]}]
+(defn set-effect [{:keys [path data set-options on-success on-failure]}]
   (promise-wrapper (setter path data set-options) on-success on-failure))
 
-(defn- update-effect [{:keys [path data on-success on-failure]}]
+(defn update-effect [{:keys [path data on-success on-failure]}]
   (promise-wrapper (updater path data) on-success on-failure))
 
-(defn- delete-effect [{:keys [path on-success on-failure]}]
+(defn delete-effect [{:keys [path on-success on-failure]}]
   (promise-wrapper (deleter path) on-success on-failure))
 
-(defn- write-batch-effect [{:keys [operations on-success on-failure]}]
+(defn write-batch-effect [{:keys [operations on-success on-failure]}]
   (let [batch-instance (.batch (js/firebase.firestore))]
     (run! (fn [[event-type {:keys [path data set-options]}]]
             (case event-type
@@ -274,7 +274,7 @@
 (defn- adder [path data]
   (.add (clj->CollectionReference path) (clj->js data)))
 
-(defn- add-effect [{:keys [path data on-success on-failure]}]
+(defn add-effect [{:keys [path data on-success on-failure]}]
   (promise-wrapper (adder path data) (reference-parser-wrapper on-success) on-failure))
 
 (defn- query [ref where order-by limit
@@ -305,12 +305,12 @@
                start-at start-after end-at end-before)
         (clj->GetOptions get-options)))
 
-(defn- get-effect [{:keys [path-document
-                           path-collection where order-by limit
-                           start-at start-after end-at end-before
-                           doc-changes snapshot-listen-options
-                           get-options snapshot-options expose-objects
-                           on-success on-failure]}]
+(defn get-effect [{:keys [path-document
+                          path-collection where order-by limit
+                          start-at start-after end-at end-before
+                          doc-changes snapshot-listen-options
+                          get-options snapshot-options expose-objects
+                          on-success on-failure]}]
   (if path-document
     (promise-wrapper (getter-document path-document get-options)
                      (document-parser-wrapper on-success snapshot-options expose-objects)
@@ -327,7 +327,7 @@
     on-next
     (if on-error (event->fn on-error) (core/default-error-handler))))
 
-(defn- on-snapshot [{:keys [path-document
+(defn on-snapshot [{:keys [path-document
                             path-collection where order-by limit
                             start-at start-after end-at end-before doc-changes
                             snapshot-listen-options snapshot-options
@@ -347,9 +347,9 @@
                                                  doc-changes expose-objects)
                       on-error)))
 
-(def ^:private on-snapshot-effect on-snapshot)
+(def on-snapshot-effect on-snapshot)
 
-(defn- on-snapshot-sub [app-db [_ params]]
+(defn on-snapshot-sub [app-db [_ params]]
   ;; [TODO] Potential bug alert:
   ;;        This works the same way as database/on-value-sub, except for UUIDs.
   (let [uuid (str (random-uuid))
