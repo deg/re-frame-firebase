@@ -384,10 +384,12 @@
                       firestore-settings
                       get-user-sub
                       set-user-event
-                      default-error-handler]}]
+                      default-error-handler
+                      fs-kw?]}]
   (core/set-firebase-state :get-user-sub          get-user-sub
                            :set-user-event        set-user-event
                            :default-error-handler default-error-handler)
   (core/initialize-app firebase-app-info)
+  (swap! core/firebase-state assoc :fs-kw? fs-kw?)
   (firestore/set-firestore-settings firestore-settings)
   (auth/init-auth))

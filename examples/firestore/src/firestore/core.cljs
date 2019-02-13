@@ -174,6 +174,7 @@
   (firebase/init :firebase-app-info firebase-app-info
                  ; See: https://firebase.google.com/docs/reference/js/firebase.firestore.Settings
                  :firestore-settings {:timestampsInSnapshots true}
+                 :fs-kw? true
                  :get-user-sub      [:user]
                  :set-user-event    [:set-user])
   (reagent/render [ui]

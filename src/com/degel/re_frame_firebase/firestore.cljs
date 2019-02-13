@@ -161,7 +161,8 @@
    (DocumentSnapshot->clj doc snapshot-options expose-objects nil))
   ([doc snapshot-options expose-objects sure-exists]
    {:data (when (or sure-exists (.-exists doc))
-            (js->clj (.data doc (clj->SnapshotOptions snapshot-options))))
+            (js->clj (.data doc (clj->SnapshotOptions snapshot-options))
+                     :keywordize-keys (:fs-kw? @core/firebase-state)))
     :id (.-id doc)
     :metadata (SnapshotMetadata->clj (.-metadata doc))
     :ref (PathReference->clj (.-ref doc))
