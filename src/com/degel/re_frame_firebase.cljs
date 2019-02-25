@@ -24,6 +24,17 @@
 ;;;
 (re-frame/reg-fx :firebase/write database/write-effect)
 
+;;; Update values to Firebase.
+;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#update
+;;;
+;;; Example FX:
+;;; {:firebase/update [:path [:my :data]
+;;;                   :value {:life 42, :universe 42, :everything 42}
+;;;                   :on-success #(prn "Write succeeded")
+;;;                   :on-failure [:firebase-error]]}
+;;;
+(re-frame/reg-fx :firebase/update database/update-effect)
+
 
 ;;; Write a value to a Firebase list.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#push
@@ -61,6 +72,7 @@
    (run! (fn [[event-type args]]
            (case event-type
              :firebase/write        (database/write-effect args)
+             :firebase/update       (database/update-effect args)
              :firebase/push         (database/push-effect args)
              :firebase/read-once    (database/once-effect args)
              :firestore/delete      (firestore/delete-effect args)

@@ -261,11 +261,11 @@ See [Firebase docs][phone-auth] for details.
 
 The firebase database is a tree. You can write values to nodes in a tree, or push them
 to auto-generated unique sub-nodes of a node.  In re-frame-firebase, these are exposed
-through the `:firebase/write` and `:firebase/push` effect handlers.
+through the `:firebase/write` `:firebase/push` and  `:firebase/update` effect handlers.
 
 Each takes parameters:
 - `:path` - A vector representing a node in the firebase tree, e.g. `[:my :node]`
-- `:value` - The value to write or push
+- `:value` - The value to write or push.
 - `:on-success` - Event vector or function to call when write succeeds.
 - `:on-failure` - Event vector or function to call with the error.
 
@@ -298,6 +298,27 @@ Example (diff in bold):
 
 > **Note:** Events will also receive the same creation key. `(rf/reg-event-fx :event-name (fn [ctx [_ key]])`
 
+
+;;; :firebase/update can write to children subnodes, without overwriting children's siblings.  Use 
+;;; a clojure map of children subnode(s) and their value(s).  :firebase/write overwrites all children.
+
+```
+
+Example (diff in bold):
+
+<pre>
+(re-frame/reg-event-fx
+  :update-status
+  (fn [{db :db} [_ <b>status-children</b>]]   ;; status-children is e.g. {:life 42, :universe 42, :everything 42}
+    {:firebase/<b>update</b> {:path [:status]
+                      :value <b>status-children</b>
+                      :on-success #(js/console.log <b>"Updated status-children"</b)
+                      :on-failure [:handle-failure]}}))
+</pre>
+
+> **Note:** Multi-location updates are [atomic][multi-location-update-blogpost].
+
+[multi-location-update-blogpost]: https://firebase.googleblog.com/2015/09/introducing-multi-location-updates-and_86.html
 
 Re-frame-firebase also supplies `:firebase/multi` to allow multiple write and/or
 pushes from a single event:
