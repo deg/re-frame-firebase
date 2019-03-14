@@ -299,10 +299,8 @@ Example (diff in bold):
 > **Note:** Events will also receive the same creation key. `(rf/reg-event-fx :event-name (fn [ctx [_ key]])`
 
 
-;;; :firebase/update can write to children subnodes, without overwriting children's siblings.  Use 
-;;; a clojure map of children subnode(s) and their value(s).  :firebase/write overwrites all children.
-
-```
+`:firebase/update` can write to children subnodes, without overwriting children's siblings.  Use 
+a clojure map of children subnode(s) and their value(s).  `:firebase/write` overwrites all children.
 
 Example (diff in bold):
 
@@ -312,7 +310,7 @@ Example (diff in bold):
   (fn [{db :db} [_ <b>status-children</b>]]   ;; status-children is e.g. {:life 42, :universe 42, :everything 42}
     {:firebase/<b>update</b> {:path [:status]
                       :value <b>status-children</b>
-                      :on-success #(js/console.log <b>"Updated status-children"</b)
+                      :on-success #(js/console.log <b>"Updated status-children"</b>)
                       :on-failure [:handle-failure]}}))
 </pre>
 
@@ -323,7 +321,7 @@ Example (diff in bold):
 Re-frame-firebase also supplies `:firebase/multi` to allow multiple write and/or
 pushes from a single event:
 
-```
+```clojure
 (re-frame/reg-event-fx
   :write-keyed-message
   (fn [{db :db} [_ message]]
