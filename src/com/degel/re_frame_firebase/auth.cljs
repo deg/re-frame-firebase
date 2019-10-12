@@ -75,10 +75,6 @@
       (>evt [(core/default-error-handler)
              (js/Error. (str "Unsupported sign-in-method: " sign-in-method ". Either :redirect or :popup are supported."))]))))
 
-(defn microsoft-sign-in
-  [opts]
-  (oauth-sign-in (js/firebase.auth.OAuthProvider.) opts))
-
 (defn google-sign-in
   [opts]
   ;; TODO: use Credential for mobile.
@@ -98,6 +94,12 @@
 (defn github-sign-in
   [opts]
   (oauth-sign-in (js/firebase.auth.GithubAuthProvider.) opts))
+
+
+(defn microsoft-sign-in
+  [opts]
+  (oauth-sign-in (js/firebase.auth.OAuthProvider. "microsoft.com") opts))
+
 
 
 (defn email-sign-in [{:keys [email password]}]
