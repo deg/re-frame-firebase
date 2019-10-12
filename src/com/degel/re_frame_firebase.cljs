@@ -36,7 +36,7 @@
 (re-frame/reg-fx :firebase/update database/update-effect)
 
 ;;; Transactionally reads and writes a value to Firebase.  NB: :transaction-update function
-;;; may run more than once so must be free of side effects.  Importantly, it must be able 
+;;; may run more than once so must be free of side effects.  Importantly, it must be able
 ;;; to handle null data.  To abort a transaction, return js/undefined.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#transaction
 ;;;
@@ -44,7 +44,7 @@
 ;;; {:firebase/transaction {:path [:my :data]
 ;;;                   :transaction-update (fn [old-val] (if old-val (inc old-val)))
 ;;;                   :apply-locally false  ;; default is true = multiple update events may be received if transaction-update needs to be run more than once.
-;;;                   ;; The on-* handlers can also take a re-frame event 
+;;;                   ;; The on-* handlers can also take a re-frame event
 ;;;                   :on-success (fn [snapshot committed] (if committed (prn "Transaction committed: " snapshot)))
 ;;;                   :on-failure (fn [err snapshot committed] (prn "Error: " err))}}
 ;;;
@@ -52,7 +52,7 @@
 ;;;                   :f +
 ;;;                   :argv [2 3]
 ;;;                   :apply-locally false  ;; default is true = multiple update events may be received if transaction-update needs to be run more than once.
-;;;                   ;; The on-* handlers can also take a re-frame event 
+;;;                   ;; The on-* handlers can also take a re-frame event
 ;;;                   :on-success (fn [snapshot committed] (if committed (prn "Transaction committed: " snapshot)))
 ;;;                   :on-failure [:firebase-error]}}
 (re-frame/reg-fx :firebase/transaction database/transaction-effect)
@@ -144,6 +144,7 @@
 ;;;                                    "https://www.googleapis.com/auth/calendar.readonly"]
 ;;;                           :custom-parameters {"login_hint" "user@example.com"}}}
 ;;;
+(re-frame/reg-fx :firebase/microsoft-sign-in   auth/microsoft-sign-in)
 (re-frame/reg-fx :firebase/google-sign-in   auth/google-sign-in)
 (re-frame/reg-fx :firebase/facebook-sign-in auth/facebook-sign-in)
 (re-frame/reg-fx :firebase/twitter-sign-in  auth/twitter-sign-in)

@@ -75,6 +75,9 @@
       (>evt [(core/default-error-handler)
              (js/Error. (str "Unsupported sign-in-method: " sign-in-method ". Either :redirect or :popup are supported."))]))))
 
+(defn microsoft-sign-in
+  [opts]
+  (oauth-sign-in (js/firebase.auth.OAuthProvider.) opts))
 
 (defn google-sign-in
   [opts]
