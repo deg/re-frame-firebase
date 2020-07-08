@@ -11,7 +11,8 @@
    [com.degel.re-frame-firebase.core :as core]
    [com.degel.re-frame-firebase.auth :as auth]
    [com.degel.re-frame-firebase.database :as database]
-   [com.degel.re-frame-firebase.firestore :as firestore]))
+   [com.degel.re-frame-firebase.firestore :as firestore]
+   [com.degel.re-frame-firebase.storage :as storage]))
 
 ;;; Write a value to Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#set
@@ -359,6 +360,10 @@
 ;;;   [:firestore/on-snapshot {:path-document [:my :document]}])
 ;;;
 (re-frame/reg-sub-raw :firestore/on-snapshot firestore/on-snapshot-sub)
+
+
+(re-frame/reg-fx :storage/put storage/put-effect)
+(re-frame/reg-fx :storage/delete storage/delete-effect)
 
 
 ;;; Start library and register callbacks.
