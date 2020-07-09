@@ -362,8 +362,64 @@
 (re-frame/reg-sub-raw :firestore/on-snapshot firestore/on-snapshot-sub)
 
 
+;;; Puts a collection of File objects into a Firebase Storage bucket.
+;;; See: https://firebase.google.com/docs/storage/web/upload-files
+;;;
+;;; Required arguments: :path :file
+;;;
+;;; - :path         Path to object in the Storage bucket
+;;; - :file         File (https://developer.mozilla.org/en-US/docs/Web/API/File)
+;;; - :bucket       If not supplied, will assume the default Firebase allocated bucket
+;;; - :metadata     Map of metadata to set on Storage object
+;;; - :on-progress  Will be provided with the percentage complete
+;;; - :on-success   
+;;; - :on-error     
+;;;
+;;; Example FX:
+;;;    {:storage/put [{:path "path/to/object"
+;;;                    :file File
+;;;                    :metadata {:customMetadata {"some-key" "some-value"}}
+;;;                    :on-progress #(.log js/console (str "Upload is " % "% complete."))
+;;;                    :on-success #(js/alert "Success!")
+;;;                    :on-error #(js/alert "Error: " %)}]}
+;;;
 (re-frame/reg-fx :storage/put storage/put-effect)
+
+
+;;; Deletes a collection of object paths/keys from a Firebase Storage bucket.
+;;; See: https://firebase.google.com/docs/storage/web/delete-files
+;;;
+;;; Required arguments: :path
+;;;
+;;; - :path         Path to object in the Storage bucket
+;;; - :bucket       If not supplied, will assume the default Firebase allocated bucket
+;;; - :on-success   
+;;; - :on-error     
+;;;
+;;; Example FX:
+;;;    {:storage/delete [{:path "path/to/object"
+;;;                       :on-success #(js/alert "Success!")
+;;;                       :on-error #(js/alert "Error: " %)}]}
+;;;
 (re-frame/reg-fx :storage/delete storage/delete-effect)
+
+
+;;; Generates a url with which the browser can download an object from Firebase Storage
+;;; See: https://firebase.google.com/docs/storage/web/download-files
+;;;
+;;; Required arguments: :path
+;;;
+;;; - :path         Path to object in the Storage bucket
+;;; - :bucket       If not supplied, will assume the default Firebase allocated bucket
+;;; - :on-success   Will be provided with the download url
+;;; - :on-error     
+;;;
+;;; Example FX:
+;;;    {:storage/download-url {:path "path/to/object"
+;;;                            :on-success #(js/window.open %)
+;;;                            :on-error #(js/alert "Error: " %)}}
+;;;
+(re-frame/reg-fx :storage/download-url storage/download-url-effect)
 
 
 ;;; Start library and register callbacks.

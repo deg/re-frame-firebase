@@ -528,6 +528,75 @@ as it is meant to be used as a subscription.
 ```
 
 
+### Storage
+
+[Storage](https://firebase.google.com/docs/storage) Cloud Storage for Firebase is a powerful, simple, and cost-effective object storage service.  
+It uses effects for put, delete, download operations.
+
+#### Put
+Puts a collection of File objects into a Firebase Storage bucket.
+See: https://firebase.google.com/docs/storage/web/upload-files
+
+Required arguments :path :file
+
+ - :path         Path to object in the Storage bucket
+ - :file         File (https://developer.mozilla.org/en-US/docs/Web/API/File)
+ - :bucket       If not supplied, will assume the default Firebase allocated bucket
+ - :metadata     Map of metadata to set on Storage object
+ - :on-progress  Will be provided with the percentage complete
+ - :on-success   
+ - :on-error     
+
+ Example FX:
+ ```clojure
+    {:storage/put [{:path "path/to/object"
+                    :file File
+                    :metadata {:customMetadata {"some-key" "some-value"}}
+                    :on-progress #(.log js/console (str "Upload is " % "% complete."))
+                    :on-success #(js/alert "Success!")
+                    :on-error #(js/alert "Error: " %)}]}
+```
+
+#### Delete
+Deletes a collection of object paths/keys from a Firebase Storage bucket.
+See: https://firebase.google.com/docs/storage/web/delete-files
+
+Required arguments :path
+
+- :path         Path to object in the Storage bucket
+- :bucket       If not supplied, will assume the default Firebase allocated bucket
+- :on-success   
+- :on-error     
+
+Example FX:
+ ```clojure
+   {:storage/delete [{:path "path/to/object"
+                      :on-success #(js/alert "Success!")
+                      :on-error #(js/alert "Error: " %)}]}
+ ```
+
+
+#### Download URL
+Generates a url with which the browser can download an object from Firebase Storage
+See: https://firebase.google.com/docs/storage/web/download-files
+
+Required arguments: :path
+
+- :path         Path to object in the Storage bucket
+- :bucket       If not supplied, will assume the default Firebase allocated bucket
+- :on-success   Will be provided with the download url
+- :on-error     
+
+Example FX:
+ ```clojure
+   {:storage/download-url {:path "path/to/object"
+                           :on-success #(js/window.open %)
+                           :on-error #(js/alert "Error: " %)}}
+ ```
+
+
+
+
 ## Examples and projects
 
 There are examples provided in the [examples](examples) folder. It is great to
