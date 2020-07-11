@@ -12,7 +12,8 @@
    [com.degel.re-frame-firebase.auth :as auth]
    [com.degel.re-frame-firebase.database :as database]
    [com.degel.re-frame-firebase.firestore :as firestore]
-   [com.degel.re-frame-firebase.storage :as storage]))
+   [com.degel.re-frame-firebase.storage :as storage]
+   [com.degel.re-frame-firebase.functions :as functions]))
 
 ;;; Write a value to Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#set
@@ -420,6 +421,25 @@
 ;;;                            :on-error #(js/alert "Error: " %)}}
 ;;;
 (re-frame/reg-fx :storage/download-url storage/download-url-effect)
+
+
+;;; Executes a Callable Firebase Cloud Function
+;;; See: https://firebase.google.com/docs/functions/callable
+;;;
+;;; Required arguments: :cfn-name :data
+;;;
+;;; - :cfn-name     Cloud Function name
+;;; - :data         Map containing request data
+;;; - :on-success   Will be called with a clojure Map containing the response data
+;;; - :on-error     
+;;;
+;;; Example FX:
+;;;    {:functions/call {:cfn-name "my-function-name"
+;;;                      :data {:foo "bar"} 
+;;;                      :on-success #(js/alert (:foobar %))
+;;;                      :on-error #(js/alert "Error: " %)}}
+;;;
+(re-frame/reg-fx :functions/call functions/call-effect)
 
 
 ;;; Start library and register callbacks.
