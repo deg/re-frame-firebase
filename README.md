@@ -595,6 +595,28 @@ Example FX:
  ```
 
 
+### Functions
+
+[Functions](https://firebase.google.com/docs/functions) Cloud Functions for Firebase is a serverless framework that lets you automatically run backend code in response to events.
+It uses effects for call.
+
+#### Call
+Executes a Callable Firebase Cloud Function
+See: https://firebase.google.com/docs/functions/callable
+
+Required arguments: :cfn-name :data
+- :cfn-name     Cloud Function name
+- :data         Map containing request data
+- :on-success   Will be called with a clojure Map containing the response data
+- :on-error     
+
+Example FX:
+ ```clojure
+   {:functions/call {:cfn-name "my-function-name"
+                     :data {:foo "bar"} 
+                     :on-success #(js/alert (:foobar %))
+                     :on-error #(js/alert "Error: " %)}}
+ ```
 
 
 ## Examples and projects
