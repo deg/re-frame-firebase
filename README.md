@@ -456,7 +456,7 @@ You should provide a vector of effect maps for each of the wanted operations und
 the `:operations` argument.
 
 ```clojure
-{:firestore/batch-write
+{:firestore/write-batch
  {:operations
   [[:firestore/set {:path [:cities "SF"] :data {:name "San Francisco" :state "CA"}}]
    [:firestore/set {:path [:cities "LA"] :data {:name "Los Angeles" :state "CA"}}]
