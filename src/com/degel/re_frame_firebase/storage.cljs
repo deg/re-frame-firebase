@@ -35,19 +35,25 @@
   (promise-wrapper (.getDownloadURL (-> (.ref (get-storage bucket))
                                         (.child path)))
                    on-success
-                   on-error))
+                   #(on-error (-> % js->clj .-message_))))
 
 (defn put-effect [items _]
   (doseq [item items]
     (let [{:keys [path file metadata on-success on-error on-progress bucket]} item]
       (put path file
            (clj->js metadata)
-           on-success on-error on-progress bucket))))
+           on-success 
+           #(on-error (-> % js->clj .-message_)) 
+           on-progress 
+           bucket))))
 
 (defn delete-effect [items _]
   (doseq [item items]
     (let [{:keys [path on-success on-error bucket]} item]
-      (delete path on-success on-error bucket))))
+      (delete path
+              on-success
+              #(on-error (-> % js->clj .-message_))
+              bucket))))
 
 
 
