@@ -166,6 +166,16 @@
 ;;;
 (re-frame/reg-fx :firebase/update-email auth/update-email)
 
+;;; Send a user a verification email
+;;;
+;;; Accepts a map with :on-success :on-error
+;;;
+;;; Example FX:
+;;; {:firebase/send-email-verification {:on-success #(js/alert "Success!")
+;;;                                     :on-error #(js/alert "Error!")}}
+;;;
+(re-frame/reg-fx :firebase/send-email-verification auth/send-email-verification)
+
 ;;; Login to firebase anonymously
 ;;;
 ;;; Parameter is not used

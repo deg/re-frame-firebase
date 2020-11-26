@@ -176,3 +176,11 @@
       (.updateEmail email)
       (.then on-success)
       (.catch on-error)))
+
+(defn send-email-verification
+  [{:keys [on-success on-error]}]
+  (-> (js/firebase.auth)
+      (.-currentUser)
+      (.sendEmailVerification)
+      (.then on-success)
+      (.catch on-error)))
