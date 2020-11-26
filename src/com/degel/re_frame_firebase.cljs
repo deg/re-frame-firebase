@@ -143,6 +143,29 @@
 (re-frame/reg-fx :firebase/email-create-user auth/email-create-user)
 
 
+;;; Updates the user's display name and profile photo URL
+;;;
+;;; Accepts a map with :profile :on-success :on-error
+;;;
+;;; Example FX:
+;;; {:firebase/update-profile {:profile {:displayName "Joe Soap"
+;;;                                      :photoURL "http://my.photo.com"}
+;;;                            :on-success #(js/alert "Success!")
+;;;                            :on-error #(js/alert "Error!")}}
+;;;
+(re-frame/reg-fx :firebase/update-profile auth/update-profile)
+
+;;; Updates the user's email address
+;;;
+;;; Accepts a map with :email :on-success :on-error
+;;;
+;;; Example FX:
+;;; {:firebase/update-email {:email "joe@soap.com"
+;;;                          :on-success #(js/alert "Success!")
+;;;                          :on-error #(js/alert "Error!")}}
+;;;
+(re-frame/reg-fx :firebase/update-email auth/update-email)
+
 ;;; Login to firebase anonymously
 ;;;
 ;;; Parameter is not used

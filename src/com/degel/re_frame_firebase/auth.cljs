@@ -160,3 +160,19 @@
   (-> (js/firebase.auth)
       (.signOut)
       (.catch (core/default-error-handler))))
+
+(defn update-profile
+  [{:keys [profile on-success on-error]}]
+  (-> (js/firebase.auth)
+      (.-currentUser)
+      (.updateProfile (clj->js profile))
+      (.then on-success)
+      (.catch on-error)))
+
+(defn update-email
+  [{:keys [email on-success on-error]}]
+  (-> (js/firebase.auth)
+      (.-currentUser)
+      (.updateEmail email)
+      (.then on-success)
+      (.catch on-error)))
