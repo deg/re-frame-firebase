@@ -181,6 +181,6 @@
   [{:keys [action-code-settings on-success on-error]}]
   (-> (js/firebase.auth)
       (.-currentUser)
-      (.sendEmailVerification action-code-settings)
+      (.sendEmailVerification (clj->js action-code-settings))
       (.then on-success)
       (.catch #(on-error (-> % js->clj .-message)))))
