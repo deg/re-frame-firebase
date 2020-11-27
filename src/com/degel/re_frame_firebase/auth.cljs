@@ -167,7 +167,7 @@
       (.-currentUser)
       (.updateProfile (clj->js profile))
       (.then on-success)
-      (.catch on-error)))
+      (.catch #(on-error (-> % js->clj .-message_)))))
 
 (defn update-email
   [{:keys [email on-success on-error]}]
