@@ -178,9 +178,9 @@
       (.catch #(on-error (-> % js->clj .-message)))))
 
 (defn send-email-verification
-  [{:keys [on-success on-error]}]
+  [{:keys [action-code-settings on-success on-error]}]
   (-> (js/firebase.auth)
       (.-currentUser)
-      (.sendEmailVerification)
+      (.sendEmailVerification action-code-settings)
       (.then on-success)
       (.catch #(on-error (-> % js->clj .-message)))))
