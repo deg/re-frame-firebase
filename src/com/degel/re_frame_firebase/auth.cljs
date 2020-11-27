@@ -167,7 +167,7 @@
       (.-currentUser)
       (.updateProfile (clj->js profile))
       (.then on-success)
-      (.catch #(on-error (-> % js->clj .-message_)))))
+      (.catch #(on-error (-> % js->clj .-message)))))
 
 (defn update-email
   [{:keys [email on-success on-error]}]
@@ -175,7 +175,7 @@
       (.-currentUser)
       (.updateEmail email)
       (.then on-success)
-      (.catch #(on-error (-> % js->clj .-message_)))))
+      (.catch #(on-error (-> % js->clj .-message)))))
 
 (defn send-email-verification
   [{:keys [on-success on-error]}]
@@ -183,4 +183,4 @@
       (.-currentUser)
       (.sendEmailVerification)
       (.then on-success)
-      (.catch #(on-error (-> % js->clj .-message_)))))
+      (.catch #(on-error (-> % js->clj .-message)))))
