@@ -176,6 +176,17 @@
 ;;;
 (re-frame/reg-fx :firebase/send-email-verification auth/send-email-verification)
 
+;;; Applies a verification code sent to the user by email
+;;;
+;;; Accepts a map with :action-code :on-success :on-error
+;;;
+;;; Example FX:
+;;; {:firebase/apply-action-code {:action-code "1234567"
+;;;                               :on-success #(js/alert "Success!")
+;;;                               :on-error #(js/alert "Error!")}}
+;;;
+(re-frame/reg-fx :firebase/apply-action-code auth/apply-action-code)
+
 ;;; Login to firebase anonymously
 ;;;
 ;;; Parameter is not used

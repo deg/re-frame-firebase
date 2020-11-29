@@ -184,3 +184,10 @@
       (.sendEmailVerification (clj->js action-code-settings))
       (.then on-success)
       (.catch #(on-error (-> % js->clj .-message)))))
+
+(defn apply-action-code
+  [{:keys [action-code on-success on-error]}]
+  (-> (js/firebase.auth)
+      (.applyActionCode action-code)
+      (.then on-success)
+      (.catch #(on-error (-> % js->clj .-message)))))
