@@ -156,7 +156,8 @@
     (.warn js/console "reCaptcha confirmation missing")))
 
 
-(defn sign-out [on-success on-error]
+(defn sign-out 
+  [{:keys [on-success on-error]}]
   (-> (js/firebase.auth)
       (.signOut)
       (.then on-success)
