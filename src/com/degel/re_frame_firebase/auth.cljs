@@ -156,10 +156,11 @@
     (.warn js/console "reCaptcha confirmation missing")))
 
 
-(defn sign-out []
+(defn sign-out [on-success on-error]
   (-> (js/firebase.auth)
       (.signOut)
-      (.catch (core/default-error-handler))))
+      (.then on-success)
+      (.catch #(on-error (-> % js->clj .-message)))))
 
 (defn update-profile
   [{:keys [profile on-success on-error]}]
