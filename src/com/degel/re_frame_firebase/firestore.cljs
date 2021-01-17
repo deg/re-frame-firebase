@@ -321,31 +321,34 @@
                                                 doc-changes expose-objects)
                      on-failure)))
 
-(defn- on-snapshotter [reference-or-query snapshot-listen-options on-next on-error]
-  (.onSnapshot reference-or-query
-    (clj->SnapshotListenOptions snapshot-listen-options)
-    on-next
-    (if on-error (event->fn on-error) (core/default-error-handler))))
+(defn- on-snapshotter [reference-or-query snapshot-listen-options on-next on-error register-listener]
+  (-> (.onSnapshot reference-or-query
+                   (clj->SnapshotListenOptions snapshot-listen-options)
+                   on-next
+                   (if on-error (event->fn on-error) (core/default-error-handler)))
+      register-listener))
 
 (defn on-snapshot [{:keys [path-document
                             path-collection where order-by limit
                             start-at start-after end-at end-before doc-changes
                             snapshot-listen-options snapshot-options
                             expose-objects
-                            on-next on-error]}]
+                            on-next on-error register-listener]}]
     {:pre [(utils/validate :re-frame/vec-or-fn on-next)
            (utils/validate (s/nilable :re-frame/vec-or-fn) on-error)]}
     (if path-document
       (on-snapshotter (clj->DocumentReference path-document)
                       snapshot-listen-options
                       (document-parser-wrapper on-next snapshot-options expose-objects)
-                      on-error)
+                      on-error
+                      register-listener)
       (on-snapshotter (query (clj->CollectionReference path-collection) where order-by limit
                              start-at start-after end-at end-before)
                       snapshot-listen-options
                       (collection-parser-wrapper on-next snapshot-options snapshot-listen-options
                                                  doc-changes expose-objects)
-                      on-error)))
+                      on-error
+                      register-listener)))
 
 (def on-snapshot-effect on-snapshot)
 
