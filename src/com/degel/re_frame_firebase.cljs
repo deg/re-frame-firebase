@@ -13,7 +13,8 @@
    [com.degel.re-frame-firebase.database :as database]
    [com.degel.re-frame-firebase.firestore :as firestore]
    [com.degel.re-frame-firebase.storage :as storage]
-   [com.degel.re-frame-firebase.functions :as functions]))
+   [com.degel.re-frame-firebase.functions :as functions]
+   [com.degel.re-frame-firebase.analytics :as analytics]))
 
 ;;; Write a value to Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#set
@@ -417,8 +418,8 @@
 ;;; - :bucket       If not supplied, will assume the default Firebase allocated bucket
 ;;; - :metadata     Map of metadata to set on Storage object
 ;;; - :on-progress  Will be provided with the percentage complete
-;;; - :on-success   
-;;; - :on-error     
+;;; - :on-success
+;;; - :on-error
 ;;;
 ;;; Example FX:
 ;;;    {:storage/put [{:path "path/to/object"
@@ -438,8 +439,8 @@
 ;;;
 ;;; - :path         Path to object in the Storage bucket
 ;;; - :bucket       If not supplied, will assume the default Firebase allocated bucket
-;;; - :on-success   
-;;; - :on-error     
+;;; - :on-success
+;;; - :on-error
 ;;;
 ;;; Example FX:
 ;;;    {:storage/delete [{:path "path/to/object"
@@ -457,7 +458,7 @@
 ;;; - :path         Path to object in the Storage bucket
 ;;; - :bucket       If not supplied, will assume the default Firebase allocated bucket
 ;;; - :on-success   Will be provided with the download url
-;;; - :on-error     
+;;; - :on-error
 ;;;
 ;;; Example FX:
 ;;;    {:storage/download-url {:path "path/to/object"
@@ -475,15 +476,33 @@
 ;;; - :cfn-name     Cloud Function name
 ;;; - :data         Map containing request data
 ;;; - :on-success   Will be called with a clojure Map containing the response data
-;;; - :on-error     
+;;; - :on-error
 ;;;
 ;;; Example FX:
 ;;;    {:functions/call {:cfn-name "my-function-name"
-;;;                      :data {:foo "bar"} 
+;;;                      :data {:foo "bar"}
 ;;;                      :on-success #(js/alert (:foobar %))
 ;;;                      :on-error #(js/alert "Error: " %)}}
 ;;;
 (re-frame/reg-fx :functions/call functions/call-effect)
+
+
+
+;;; Logs an event in Firebase Analytics
+;;; See: https://firebase.google.com/docs/analytics/events?authuser=0&platform=web
+;;;
+;;; Required arguments: :event :props
+;;;
+;;; - :event        Name of the event (as keyword)
+;;; - :props        Map of key/value pairs of interesting information
+;;;
+;;; Example FX:
+;;;    {:analytics/log {:event :purchase-completed
+;;;                     :props {:amount "123.45"
+;;;                             :currency "USD"}}}
+;;;
+(re-frame/reg-fx :analytics/log analytics/log-effect)
+
 
 
 ;;; Start library and register callbacks.
@@ -527,4 +546,5 @@
                            :default-error-handler default-error-handler)
   (core/initialize-app firebase-app-info)
   (firestore/set-firestore-settings firestore-settings)
+  (analytics/init)
   (auth/init-auth))
