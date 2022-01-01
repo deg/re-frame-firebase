@@ -10,8 +10,6 @@
    [reagent.ratom :as ratom :refer [make-reaction]]
    [iron.re-utils :refer [<sub >evt event->fn sub->fn]]
    [iron.utils :as utils]
-   [firebase.app :as firebase-app]
-   [firebase.database :as firebase-database]
    [com.degel.re-frame-firebase.helpers :refer [js->clj-tree success-failure-wrapper]]
    [com.degel.re-frame-firebase.core :as core]
    [com.degel.re-frame-firebase.specs :as specs]))
