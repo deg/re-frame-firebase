@@ -14,7 +14,8 @@
    [com.degel.re-frame-firebase.firestore :as firestore]
    [com.degel.re-frame-firebase.storage :as storage]
    [com.degel.re-frame-firebase.functions :as functions]
-   [com.degel.re-frame-firebase.analytics :as analytics]))
+   [com.degel.re-frame-firebase.analytics :as analytics]
+   [com.degel.re-frame-firebase.app-check :as app-check]))
 
 ;;; Write a value to Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#set
@@ -538,13 +539,20 @@
 ;;;
 (defn init [& {:keys [firebase-app-info
                       firestore-settings
+                      app-check-settings
                       get-user-sub
                       set-user-event
-                      default-error-handler]}]
+                      default-error-handler
+                      firebase-products]}]
   (core/set-firebase-state :get-user-sub          get-user-sub
                            :set-user-event        set-user-event
                            :default-error-handler default-error-handler)
   (core/initialize-app firebase-app-info)
-  (firestore/set-firestore-settings firestore-settings)
-  (analytics/init)
-  (auth/init-auth))
+  (when (firebase-products :firestore)
+    (firestore/set-firestore-settings firestore-settings))
+  (when (firebase-products :analytics)
+    (analytics/init))
+  (when (firebase-products :auth)
+    (auth/init-auth))
+  (when (firebase-products :app-check)
+    (app-check/init app-check-settings)))

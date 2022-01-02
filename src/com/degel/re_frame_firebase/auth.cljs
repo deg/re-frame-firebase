@@ -8,7 +8,8 @@
    [re-frame.core :as re-frame]
    [iron.re-utils :refer [>evt]]
    [com.degel.re-frame-firebase.core :as core]
-   ["@firebase/auth" :refer (getAuth onAuthStateChanged getRedirectResult updateProfile)]))
+   ["@firebase/auth" :refer (getAuth onAuthStateChanged getRedirectResult updateProfile
+                                     sendEmailVerification applyActionCode updateEmail)]))
 
 
 (defn- user
@@ -174,7 +175,7 @@
   [{:keys [email on-success on-error]}]
   (-> (getAuth)
       (.-currentUser)
-      (.updateEmail email)
+      (updateEmail email)
       (.then on-success)
       (.catch #(on-error (-> % js->clj .-message)))))
 
@@ -182,13 +183,13 @@
   [{:keys [action-code-settings on-success on-error]}]
   (-> (getAuth)
       (.-currentUser)
-      (.sendEmailVerification (clj->js action-code-settings))
+      (sendEmailVerification (clj->js action-code-settings))
       (.then on-success)
       (.catch #(on-error (-> % js->clj .-message)))))
 
 (defn apply-action-code
   [{:keys [action-code on-success on-error]}]
   (-> (getAuth)
-      (.applyActionCode action-code)
+      (applyActionCode action-code)
       (.then on-success)
       (.catch #(on-error (-> % js->clj .-message)))))
