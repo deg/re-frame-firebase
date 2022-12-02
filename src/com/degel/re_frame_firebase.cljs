@@ -389,7 +389,7 @@
 ;;; Firebase Storage, an online object store, different from the similarly named Firestore.
 
 (re-frame/reg-fx :storage/put storage/put-effect)
-;;(re-frame/reg-fx :storage/delete storage/delete-effect)
+(re-frame/reg-fx :storage/delete storage/delete-effect)
 
 
 ;;; Start library and register callbacks.

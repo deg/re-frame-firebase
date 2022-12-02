@@ -34,3 +34,10 @@
 
 (defn put-effect [{:keys [path data on-success on-failure]}]
   (promise-wrapper (putter path data) on-success on-failure))
+
+(defn- deleter
+  [path]
+  (.delete (clj->StorageReference path)))
+
+(defn delete-effect [{:keys [path on-succes on-failure]}]
+  (promise-wrapper (deleter path) on-success on-failure))
