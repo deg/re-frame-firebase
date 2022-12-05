@@ -39,5 +39,5 @@
   [path]
   (.delete (clj->StorageReference path)))
 
-(defn delete-effect [{:keys [path on-succes on-failure]}]
+(defn delete-effect [{:keys [path on-success on-failure]}]
   (promise-wrapper (deleter path) on-success on-failure))
