@@ -261,7 +261,7 @@ See [Firebase docs][phone-auth] for details.
 
 The firebase database is a tree. You can write values to nodes in a tree, or push them
 to auto-generated unique sub-nodes of a node.  In re-frame-firebase, these are exposed
-through the `:firebase/write` `:firebase/push` and  `:firebase/update` effect handlers.
+through the `:firebase/write` and `:firebase/push` effect handlers.
 
 Each takes parameters:
 - `:path` - A vector representing a node in the firebase tree, e.g. `[:my :node]`
@@ -269,7 +269,10 @@ Each takes parameters:
 - `:on-success` - Event vector or function to call when write succeeds.
 - `:on-failure` - Event vector or function to call with the error.
 
-Example:
+There are also the atomic `:firebase/update`, `:firebase/transaction`, and
+`:firebase/swap` effect handlers, discussed below.
+
+Write example:
 
 ```clojure
 (re-frame/reg-event-fx
@@ -318,8 +321,57 @@ Example (diff in bold):
 
 [multi-location-update-blogpost]: https://firebase.googleblog.com/2015/09/introducing-multi-location-updates-and_86.html
 
-Re-frame-firebase also supplies `:firebase/multi` to allow multiple write and/or
-pushes from a single event:
+The `:firebase/transaction` effect handler and its more Clojure-y variant
+`:firebase/swap` perform atomic modifications to the tree.
+
+In `:firebase/transaction`, the `:transaction-update` parameter is a function that takes
+one parameter that is the old value at the `:path` location and returns the new
+value. Note that the function may be called multiple times, so should be free of side
+effects.
+
+The function must also tolerate a `nil` input gracefully. To abort a transaction, say to
+avoid overwriting an existing value, the function returns `js/undefined`.
+
+Finally, note that the `:apply-locally` boolean indicates whether the local
+firebase-system cached value should be applied optimistically, which may result in more
+than one update event to be emitted if the function needs to be run more than once. The
+default value is `true`.
+
+```clojure
+{:firebase/transaction {:path [:my :data]
+                  :transaction-update (fn [old-val] (if old-val (inc old-val)))
+                  :apply-locally false  ;; default is true = multiple update events may be received if transaction-update needs to be run more than once.
+                  ;; The on-* handlers can also take a re-frame event 
+                  :on-success (fn [snapshot committed] (if committed (prn "Transaction committed: " snapshot)))
+                  :on-failure (fn [err snapshot committed] (prn "Error: " err))}}
+```
+
+`:firebase/swap` is similar to `:firebase/transaction` but takes an `:argv` argument,
+typically a vector. The argument `:f` is the renamed `:transaction-update`, the
+update function.  The old value at the `:path` is prepended to `:argv` and then `:f`
+is applied much like `clojure.core\swap!` does for atoms.
+
+Both atomic effect handlers are provided to appeal to users coming from Firebase-first
+or Clojure-first backgrounds, respectively. For those coming from Firebase, note that
+the `snapshot` and `committed` parameters are reversed in on-*. This is to facilitate
+re-frame event handlers as they receive only the first passed parameter, ignoring the
+rest. Passing snapshot rather than committed makes for more useful possibilities.
+
+Example (diff in bold):
+
+<pre>
+{:firebase/<b>swap</b> {:path [:my :data]
+                  <b>:f + </b>
+                  <b>:argv [2 3] ;; So the swap will perform (+ old-value 2 3) </b>
+                  :apply-locally false  ;; default is true = multiple update events may be received if transaction-update needs to be run more than once.
+                  ;; The on-* handlers can also take a re-frame event 
+                  :on-success (fn [snapshot committed] (if committed (prn "Transaction committed: " snapshot)))
+                  <b>:on-failure [:handle-failure]</b>}}
+</pre>
+
+
+Re-frame-firebase also supplies `:firebase/multi` to allow multiple writes and other
+effects from a single event:
 
 ```clojure
 (re-frame/reg-event-fx

@@ -38,6 +38,44 @@
 
 (def ^:private update-effect updater)
 
+(defn- transaction->js
+  [retval]
+  ;; Preserve js/undefined as it signals to abort the transaction.
+  ;; https://firebase.google.com/docs/reference/js/firebase.database.Reference#transaction
+  (if (= js/undefined retval)
+    retval
+    (clj->js retval)))
+
+(defn- transaction-update-wrapper [transaction-update]
+  (fn [old-value]
+    (-> old-value
+        js->clj
+        clojure.walk/keywordize-keys
+        transaction-update
+        transaction->js)))
+
+(defn- transactioner [{:keys [path transaction-update on-success on-failure apply-locally]}]
+  (.transaction (fb-ref path)
+                (transaction-update-wrapper transaction-update)
+                (success-failure-wrapper on-success on-failure)
+                ;; Force apply-locally to be a boolean, as required by .transaction.
+                (if (or (false? apply-locally)
+                        (nil? apply-locally))
+                  false
+                  true)))
+
+(def transaction-effect transactioner)
+
+(defn- swapper [{:keys [path f argv on-success on-failure apply-locally]}]
+  (transactioner
+   {:path path
+    :transaction-update (fn [old-val] (apply f old-val argv))
+    :on-success on-success
+    :on-failure on-failure
+    :apply-locally apply-locally}))
+
+(def swap-effect swapper)
+
 (defn push-effect [{:keys [path value on-success on-failure] :as all}]
   (let [key (.-key (.push (fb-ref path)))]
     (setter (assoc all
@@ -68,9 +106,9 @@
           callback #(>evt [::on-value-handler id (js->clj-tree %)])]
       (.on ref "value" callback (event->fn (or on-failure (core/default-error-handler))))
       (make-reaction
-       (fn [] (get-in @app-db [::cache id] []))
-       :on-dispose #(do (.off ref "value" callback)
-                        (>evt [::on-value-handler id nil]))))
+        (fn [] (get-in @app-db [::cache id] nil))
+        :on-dispose #(do (.off ref "value" callback)
+                         (>evt [::on-value-handler id nil]))))
     (do
       (console :error "Received null Firebase on-value request")
       (make-reaction
