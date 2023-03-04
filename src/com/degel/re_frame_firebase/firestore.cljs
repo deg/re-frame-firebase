@@ -9,7 +9,7 @@
    [com.degel.re-frame-firebase.core :as core]
    [com.degel.re-frame-firebase.specs :as specs]
    [com.degel.re-frame-firebase.helpers :refer [promise-wrapper]]
-   ["@firebase/firestore" :refer (initializeFirestore DocumentReference doc getDoc collection CollectionReference getDocs onSnapshot setDoc)]))
+   ["@firebase/firestore" :refer (initializeFirestore DocumentReference doc getDoc collection CollectionReference getDocs onSnapshot setDoc FieldPath)]))
 
 
 (defn set-firestore-settings
@@ -87,9 +87,9 @@
   [field-path]
   (cond
     (nil? field-path) nil
-    (instance? js/firebase.firestore.FieldPath field-path) field-path
+    (instance? FieldPath field-path) field-path
     (coll? field-path) (apply js/firebase.firestore.FieldPath. (clj->js field-path))
-    :else (js/firebase.firestore.FieldPath. (clj->js field-path))))
+    :else (FieldPath. (clj->js field-path))))
 
 (defn clj->SetOptions
   "Converts a clojure-style map into a SetOptions satisfying one.
@@ -281,7 +281,7 @@
 (defn- query [ref where order-by limit
               start-at start-after end-at end-before]
   (as-> ref $
-    (if where
+    #_(if where
       (reduce
         (fn [$$ [field-path op value]] (.where $$ (clj->FieldPath field-path) (clj->js op) (clj->js value)))
         $ where)
