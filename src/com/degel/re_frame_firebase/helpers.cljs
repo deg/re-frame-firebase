@@ -14,7 +14,7 @@
 ;;; with them.
 
 
-(defn js->clj-tree [x]
+(defn js->clj-tree [^js x]
   (-> (.val x)
       js->clj
       clojure.walk/keywordize-keys))

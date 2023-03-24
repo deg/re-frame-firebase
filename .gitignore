@@ -4,6 +4,8 @@
 .lein-deps-sum
 .lein-plugins/
 .lein-repl-history
+.clj-kondo
+.lsp
 .repl*
 /*.iml
 /.cljs_node_repl/

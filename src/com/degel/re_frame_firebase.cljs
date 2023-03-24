@@ -13,7 +13,9 @@
    [com.degel.re-frame-firebase.database :as database]
    [com.degel.re-frame-firebase.firestore :as firestore]
    [com.degel.re-frame-firebase.storage :as storage]
-   [com.degel.re-frame-firebase.functions :as functions]))
+   [com.degel.re-frame-firebase.functions :as functions]
+   [com.degel.re-frame-firebase.analytics :as analytics]
+   [com.degel.re-frame-firebase.app-check :as app-check]))
 
 ;;; Write a value to Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#set
@@ -142,6 +144,50 @@
 (re-frame/reg-fx :firebase/email-sign-in     auth/email-sign-in)
 (re-frame/reg-fx :firebase/email-create-user auth/email-create-user)
 
+
+;;; Updates the user's display name and profile photo URL
+;;;
+;;; Accepts a map with :profile :on-success :on-error
+;;;
+;;; Example FX:
+;;; {:firebase/update-profile {:profile {:displayName "Joe Soap"
+;;;                                      :photoURL "http://my.photo.com"}
+;;;                            :on-success #(js/alert "Success!")
+;;;                            :on-error #(js/alert "Error!")}}
+;;;
+(re-frame/reg-fx :firebase/update-profile auth/update-profile)
+
+;;; Updates the user's email address
+;;;
+;;; Accepts a map with :email :on-success :on-error
+;;;
+;;; Example FX:
+;;; {:firebase/update-email {:email "joe@soap.com"
+;;;                          :on-success #(js/alert "Success!")
+;;;                          :on-error #(js/alert "Error!")}}
+;;;
+(re-frame/reg-fx :firebase/update-email auth/update-email)
+
+;;; Send a user a verification email
+;;;
+;;; Accepts a map with :on-success :on-error
+;;;
+;;; Example FX:
+;;; {:firebase/send-email-verification {:on-success #(js/alert "Success!")
+;;;                                     :on-error #(js/alert "Error!")}}
+;;;
+(re-frame/reg-fx :firebase/send-email-verification auth/send-email-verification)
+
+;;; Applies a verification code sent to the user by email
+;;;
+;;; Accepts a map with :action-code :on-success :on-error
+;;;
+;;; Example FX:
+;;; {:firebase/apply-action-code {:action-code "1234567"
+;;;                               :on-success #(js/alert "Success!")
+;;;                               :on-error #(js/alert "Error!")}}
+;;;
+(re-frame/reg-fx :firebase/apply-action-code auth/apply-action-code)
 
 ;;; Login to firebase anonymously
 ;;;
@@ -373,8 +419,8 @@
 ;;; - :bucket       If not supplied, will assume the default Firebase allocated bucket
 ;;; - :metadata     Map of metadata to set on Storage object
 ;;; - :on-progress  Will be provided with the percentage complete
-;;; - :on-success   
-;;; - :on-error     
+;;; - :on-success
+;;; - :on-error
 ;;;
 ;;; Example FX:
 ;;;    {:storage/put [{:path "path/to/object"
@@ -394,8 +440,8 @@
 ;;;
 ;;; - :path         Path to object in the Storage bucket
 ;;; - :bucket       If not supplied, will assume the default Firebase allocated bucket
-;;; - :on-success   
-;;; - :on-error     
+;;; - :on-success
+;;; - :on-error
 ;;;
 ;;; Example FX:
 ;;;    {:storage/delete [{:path "path/to/object"
@@ -413,7 +459,7 @@
 ;;; - :path         Path to object in the Storage bucket
 ;;; - :bucket       If not supplied, will assume the default Firebase allocated bucket
 ;;; - :on-success   Will be provided with the download url
-;;; - :on-error     
+;;; - :on-error
 ;;;
 ;;; Example FX:
 ;;;    {:storage/download-url {:path "path/to/object"
@@ -431,15 +477,33 @@
 ;;; - :cfn-name     Cloud Function name
 ;;; - :data         Map containing request data
 ;;; - :on-success   Will be called with a clojure Map containing the response data
-;;; - :on-error     
+;;; - :on-error
 ;;;
 ;;; Example FX:
 ;;;    {:functions/call {:cfn-name "my-function-name"
-;;;                      :data {:foo "bar"} 
+;;;                      :data {:foo "bar"}
 ;;;                      :on-success #(js/alert (:foobar %))
 ;;;                      :on-error #(js/alert "Error: " %)}}
 ;;;
 (re-frame/reg-fx :functions/call functions/call-effect)
+
+
+
+;;; Logs an event in Firebase Analytics
+;;; See: https://firebase.google.com/docs/analytics/events?authuser=0&platform=web
+;;;
+;;; Required arguments: :event :props
+;;;
+;;; - :event        Name of the event (as keyword)
+;;; - :props        Map of key/value pairs of interesting information
+;;;
+;;; Example FX:
+;;;    {:analytics/log {:event :purchase-completed
+;;;                     :props {:amount "123.45"
+;;;                             :currency "USD"}}}
+;;;
+(re-frame/reg-fx :analytics/log analytics/log-effect)
+
 
 
 ;;; Start library and register callbacks.
@@ -475,12 +539,20 @@
 ;;;
 (defn init [& {:keys [firebase-app-info
                       firestore-settings
+                      app-check-settings
                       get-user-sub
                       set-user-event
-                      default-error-handler]}]
+                      default-error-handler
+                      firebase-products]}]
   (core/set-firebase-state :get-user-sub          get-user-sub
                            :set-user-event        set-user-event
                            :default-error-handler default-error-handler)
   (core/initialize-app firebase-app-info)
-  (firestore/set-firestore-settings firestore-settings)
-  (auth/init-auth))
+  (when (firebase-products :firestore)
+    (firestore/set-firestore-settings firestore-settings))
+  (when (firebase-products :analytics)
+    (analytics/init))
+  (when (firebase-products :auth)
+    (auth/init-auth))
+  (when (firebase-products :app-check)
+    (app-check/init app-check-settings)))

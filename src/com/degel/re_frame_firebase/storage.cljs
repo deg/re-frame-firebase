@@ -1,17 +1,21 @@
 (ns com.degel.re-frame-firebase.storage
   (:require
-   [firebase.storage :as firebase-storage]
+   ["@firebase/storage" :refer (getStorage uploadBytesResumable ref deleteObject getDownloadURL)]
+   [com.degel.re-frame-firebase.core :as core]
    [com.degel.re-frame-firebase.helpers :refer [promise-wrapper]]))
 
 (defn- get-storage [bucket]
   (if bucket
-    (.storage (.app js/firebase) (str "gs://" bucket))
-    (js/firebase.storage)))                                 ;default firebase bucket
+    (-> @core/firebase-state
+        :app
+        (getStorage (str "gs://" bucket)))
+    (-> @core/firebase-state
+        :app
+        getStorage)))                                 ;default firebase bucket
 
 (defn- put [path file metadata on-success on-error on-progress bucket]
-  (let [upload-task (.put (-> (.ref (get-storage bucket))
-                              (.child path))
-                          file metadata)]
+  (let [upload-task (uploadBytesResumable (ref (get-storage bucket) path)
+                                          file metadata)]
     (.on
      upload-task
      "state_changed"
@@ -26,25 +30,23 @@
         (fn [])))))
 
 (defn- delete [path on-success on-error bucket]
-  (promise-wrapper (.delete (-> (.ref (get-storage bucket))
-                                (.child path)))
+  (promise-wrapper (deleteObject (ref (get-storage bucket) path))
                    on-success
                    on-error))
 
 (defn download-url-effect [{:keys [path on-success on-error bucket]}]
-  (promise-wrapper (.getDownloadURL (-> (.ref (get-storage bucket))
-                                        (.child path)))
+  (promise-wrapper (getDownloadURL (ref (get-storage bucket) path))
                    on-success
-                   #(on-error (-> % js->clj .-message_))))
+                   #(on-error (-> % js->clj .-message))))
 
 (defn put-effect [items _]
   (doseq [item items]
     (let [{:keys [path file metadata on-success on-error on-progress bucket]} item]
       (put path file
            (clj->js metadata)
-           on-success 
-           #(on-error (-> % js->clj .-message_)) 
-           on-progress 
+           on-success
+           #(on-error (-> % js->clj .-message))
+           on-progress
            bucket))))
 
 (defn delete-effect [items _]
@@ -52,9 +54,5 @@
     (let [{:keys [path on-success on-error bucket]} item]
       (delete path
               on-success
-              #(on-error (-> % js->clj .-message_))
+              #(on-error (-> % js->clj .-message))
               bucket))))
-
-
-
-
