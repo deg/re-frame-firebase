@@ -7,9 +7,9 @@
    [clojure.spec.alpha :as s]
    [re-frame.core :as re-frame]
    [iron.re-utils :refer [>evt]]
-   [firebase.app :as firebase-app]
-   [firebase.auth :as firebase-auth]
-   [com.degel.re-frame-firebase.core :as core]))
+   [com.degel.re-frame-firebase.core :as core]
+   ["@firebase/auth" :refer (getAuth onAuthStateChanged getRedirectResult updateProfile
+                                     sendEmailVerification applyActionCode updateEmail)]))
 
 
 (defn- user
@@ -31,18 +31,18 @@
       (core/set-current-user)))
 
 (defn- init-auth []
-  (.onAuthStateChanged
-   (js/firebase.auth)
-   set-user
-   (core/default-error-handler))
 
-  (-> (js/firebase.auth)
-      (.getRedirectResult)
+  (onAuthStateChanged (getAuth) set-user (core/default-error-handler))
+
+  (-> (getAuth)
+      getRedirectResult
       (.then (fn on-user-credential [user-credential]
-               (-> user-credential
-                   (.-user)
-                   set-user)))
+               (when user-credential
+                 (-> user-credential
+                     (.-user)
+                     set-user))))
       (.catch (core/default-error-handler))))
+
 
 (def ^:private sign-in-fns
   {:popup (memfn signInWithPopup auth-provider)
@@ -62,13 +62,13 @@
          :or {sign-in-method :redirect}} opts]
 
     (doseq [scope scopes]
-      (.addScope auth-provider scope))
+      (.addScope ^js auth-provider scope))
 
     (when custom-parameters
-      (.setCustomParameters auth-provider (clj->js custom-parameters)))
+      (.setCustomParameters ^js auth-provider (clj->js custom-parameters)))
 
     (if-let [sign-in (sign-in-fns sign-in-method)]
-      (-> (js/firebase.auth)
+      (-> (getAuth)
           (sign-in auth-provider)
           (.then (partial maybe-link-with-credential link-with-credential))
           (.catch (core/default-error-handler)))
@@ -98,28 +98,28 @@
 
 
 (defn email-sign-in [{:keys [email password]}]
-  (-> (js/firebase.auth)
+  (-> (getAuth)
       (.signInWithEmailAndPassword email password)
       (.then set-user)
       (.catch (core/default-error-handler))))
 
 
 (defn email-create-user [{:keys [email password]}]
-  (-> (js/firebase.auth)
+  (-> (getAuth)
       (.createUserWithEmailAndPassword email password)
       (.then set-user)
       (.catch (core/default-error-handler))))
 
 
 (defn anonymous-sign-in [opts]
-  (-> (js/firebase.auth)
+  (-> (getAuth)
       (.signInAnonymously)
       (.then set-user)
       (.catch (core/default-error-handler))))
 
 
 (defn custom-token-sign-in [{:keys [token]}]
-  (-> (js/firebase.auth)
+  (-> (getAuth)
       (.signInWithCustomToken token)
       (.then set-user)
       (.catch (core/default-error-handler))))
@@ -136,7 +136,7 @@
 
 (defn phone-number-sign-in [{:keys [phone-number on-send]}]
   (if-let [verifier (:recaptcha-verifier @core/firebase-state)]
-    (-> (js/firebase.auth)
+    (-> (getAuth)
         (.signInWithPhoneNumber phone-number verifier)
         (.then (fn [confirmation]
                  (when on-send
@@ -156,7 +156,40 @@
     (.warn js/console "reCaptcha confirmation missing")))
 
 
-(defn sign-out []
-  (-> (js/firebase.auth)
+(defn sign-out
+  [{:keys [on-success on-error]}]
+  (-> (getAuth)
       (.signOut)
-      (.catch (core/default-error-handler))))
+      (.then on-success)
+      (.catch #(on-error (-> % js->clj .-message)))))
+
+(defn update-profile
+  [{:keys [profile on-success on-error]}]
+  (-> (getAuth)
+      (.-currentUser)
+      (updateProfile (clj->js profile))
+      (.then on-success)
+      (.catch #(on-error (-> % js->clj .-message)))))
+
+(defn update-email
+  [{:keys [email on-success on-error]}]
+  (-> (getAuth)
+      (.-currentUser)
+      (updateEmail email)
+      (.then on-success)
+      (.catch #(on-error (-> % js->clj .-message)))))
+
+(defn send-email-verification
+  [{:keys [action-code-settings on-success on-error]}]
+  (-> (getAuth)
+      (.-currentUser)
+      (sendEmailVerification (clj->js action-code-settings))
+      (.then on-success)
+      (.catch #(on-error (-> % js->clj .-message)))))
+
+(defn apply-action-code
+  [{:keys [action-code on-success on-error]}]
+  (-> (getAuth)
+      (applyActionCode action-code)
+      (.then on-success)
+      (.catch #(on-error (-> % js->clj .-message)))))

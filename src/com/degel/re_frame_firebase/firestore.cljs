@@ -6,16 +6,17 @@
    [reagent.ratom :as ratom :refer [make-reaction]]
    [iron.re-utils :as re-utils :refer [<sub >evt event->fn sub->fn]]
    [iron.utils :as utils]
-   [firebase.app :as firebase-app]
-   [firebase.firestore :as firebase-firestore]
    [com.degel.re-frame-firebase.core :as core]
    [com.degel.re-frame-firebase.specs :as specs]
-   [com.degel.re-frame-firebase.helpers :refer [promise-wrapper]]))
+   [com.degel.re-frame-firebase.helpers :refer [promise-wrapper]]
+   ["@firebase/firestore" :refer (initializeFirestore DocumentReference doc getDoc collection CollectionReference getDocs onSnapshot setDoc FieldPath)]))
 
 
 (defn set-firestore-settings
   [settings]
-  (.settings (js/firebase.firestore) (clj->js (or settings {}))))
+  (swap! core/firebase-state assoc
+         :firestore (initializeFirestore (:app @core/firebase-state)
+                                         (clj->js (or settings {})))))
 
 ;; Extra public functions
 (defn server-timestamp
@@ -51,7 +52,7 @@
   {:firestore/get {:path-collection [:my-collection]
                    :where [[(document-id-field-path) :>= \"start\"]]}}"
   []
-  (.documentId firebase.firestore.FieldPath))
+  (.documentId js/firebase.firestore.FieldPath))
 
 
 ;; Type Conversion/Parsing
@@ -61,9 +62,9 @@
   See https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference"
   [path]
   {:pre [(utils/validate ::specs/path-collection path)]}
-  (if (instance? js/firebase.firestore.CollectionReference path)
+  (if (instance? CollectionReference path)
     path
-    (.collection (js/firebase.firestore)
+    (collection (:firestore @core/firebase-state)
                  (str/join "/" (clj->js path)))))
 
 (defn clj->DocumentReference
@@ -72,10 +73,10 @@
   See https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference"
   [path]
   {:pre [(utils/validate ::specs/path-document path)]}
-  (if (instance? js/firebase.firestore.DocumentReference path)
+  (if (instance? DocumentReference path)
     path
-    (.doc (js/firebase.firestore)
-          (str/join "/" (clj->js path)))))
+    (doc (:firestore @core/firebase-state)
+         (str/join "/" (clj->js path)))))
 
 (defn clj->FieldPath
   "Converts a string/keyword or a seq of string/keywords into a FieldPath.
@@ -86,9 +87,9 @@
   [field-path]
   (cond
     (nil? field-path) nil
-    (instance? js/firebase.firestore.FieldPath field-path) field-path
+    (instance? FieldPath field-path) field-path
     (coll? field-path) (apply js/firebase.firestore.FieldPath. (clj->js field-path))
-    :else (js/firebase.firestore.FieldPath. (clj->js field-path))))
+    :else (FieldPath. (clj->js field-path))))
 
 (defn clj->SetOptions
   "Converts a clojure-style map into a SetOptions satisfying one.
@@ -234,11 +235,11 @@
 ;; re-frame Effects/Subscriptions
 (defn- setter
   ([path data set-options]
-   (.set (clj->DocumentReference path)
+   (setDoc (clj->DocumentReference path)
          (clj->js data)
          (clj->SetOptions set-options)))
   ([instance path data set-options]
-   (.set instance
+   (setDoc instance
          (clj->DocumentReference path)
          (clj->js data)
          (clj->SetOptions set-options))))
@@ -280,7 +281,7 @@
 (defn- query [ref where order-by limit
               start-at start-after end-at end-before]
   (as-> ref $
-    (if where
+    #_(if where
       (reduce
         (fn [$$ [field-path op value]] (.where $$ (clj->FieldPath field-path) (clj->js op) (clj->js value)))
         $ where)
@@ -297,11 +298,11 @@
     (if end-before (.apply (.-endBefore $) $ (clj->js end-before)) $)))
 
 (defn- getter-document [path get-options]
-  (.get (clj->DocumentReference path) (clj->GetOptions get-options)))
+  (getDoc (clj->DocumentReference path) (clj->GetOptions get-options)))
 
 (defn- getter-collection [path get-options where order-by limit
                           start-at start-after end-at end-before]
-  (.get (query (clj->CollectionReference path) where order-by limit
+  (getDocs (query (clj->CollectionReference path) where order-by limit
                start-at start-after end-at end-before)
         (clj->GetOptions get-options)))
 
@@ -321,31 +322,34 @@
                                                 doc-changes expose-objects)
                      on-failure)))
 
-(defn- on-snapshotter [reference-or-query snapshot-listen-options on-next on-error]
-  (.onSnapshot reference-or-query
-    (clj->SnapshotListenOptions snapshot-listen-options)
-    on-next
-    (if on-error (event->fn on-error) (core/default-error-handler))))
+(defn- on-snapshotter [reference-or-query snapshot-listen-options on-next on-error register-listener]
+  (-> (onSnapshot reference-or-query
+                   (clj->SnapshotListenOptions snapshot-listen-options)
+                   on-next
+                   (if on-error (event->fn on-error) (core/default-error-handler)))
+      register-listener))
 
 (defn on-snapshot [{:keys [path-document
                             path-collection where order-by limit
                             start-at start-after end-at end-before doc-changes
                             snapshot-listen-options snapshot-options
                             expose-objects
-                            on-next on-error]}]
+                            on-next on-error register-listener]}]
     {:pre [(utils/validate :re-frame/vec-or-fn on-next)
            (utils/validate (s/nilable :re-frame/vec-or-fn) on-error)]}
     (if path-document
       (on-snapshotter (clj->DocumentReference path-document)
                       snapshot-listen-options
                       (document-parser-wrapper on-next snapshot-options expose-objects)
-                      on-error)
+                      on-error
+                      register-listener)
       (on-snapshotter (query (clj->CollectionReference path-collection) where order-by limit
                              start-at start-after end-at end-before)
                       snapshot-listen-options
                       (collection-parser-wrapper on-next snapshot-options snapshot-listen-options
                                                  doc-changes expose-objects)
-                      on-error)))
+                      on-error
+                      register-listener)))
 
 (def on-snapshot-effect on-snapshot)
 
