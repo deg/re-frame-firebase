@@ -3,18 +3,18 @@
 
 (ns com.degel.re-frame-firebase.database
   (:require
-   [clojure.spec.alpha :as s]
-   [clojure.string :as str]
-   [re-frame.core :as re-frame]
-   [re-frame.loggers :refer [console]]
-   [reagent.ratom :as ratom :refer [make-reaction]]
-   [iron.re-utils :refer [<sub >evt event->fn sub->fn]]
-   [iron.utils :as utils]
-   [firebase.app :as firebase-app]
-   [firebase.database :as firebase-database]
-   [com.degel.re-frame-firebase.helpers :refer [js->clj-tree success-failure-wrapper]]
-   [com.degel.re-frame-firebase.core :as core]
-   [com.degel.re-frame-firebase.specs :as specs]))
+    [clojure.spec.alpha :as s]
+    [clojure.string :as str]
+    [re-frame.core :as re-frame]
+    [re-frame.loggers :refer [console]]
+    [reagent.ratom :as ratom :refer [make-reaction]]
+    [iron.re-utils :refer [<sub >evt event->fn sub->fn]]
+    [iron.utils :as utils]
+    [firebase.app :as firebase-app]
+    [firebase.database :as firebase-database]
+    [com.degel.re-frame-firebase.helpers :refer [js->clj-tree success-failure-wrapper]]
+    [com.degel.re-frame-firebase.core :as core]
+    [com.degel.re-frame-firebase.specs :as specs]))
 
 
 (s/def ::cache (s/nilable (s/keys)))
@@ -55,24 +55,27 @@
         transaction->js)))
 
 (defn- transactioner [{:keys [path transaction-update on-success on-failure apply-locally]}]
-  (.transaction (fb-ref path)
-                (transaction-update-wrapper transaction-update)
-                (success-failure-wrapper on-success on-failure)
-                ;; Force apply-locally to be a boolean, as required by .transaction.
-                (if (or (false? apply-locally)
-                        (nil? apply-locally))
-                  false
-                  true)))
+  (try
+    (.transaction (fb-ref path)
+                  (transaction-update-wrapper transaction-update)
+                  (success-failure-wrapper on-success on-failure)
+                  ;; Force apply-locally to be a boolean, as required by .transaction.
+                  (if (or (false? apply-locally)
+                          (nil? apply-locally))
+                    false
+                    true))
+    (catch :default e (on-failure e))))
+
 
 (def transaction-effect transactioner)
 
 (defn- swapper [{:keys [path f argv on-success on-failure apply-locally]}]
   (transactioner
-   {:path path
-    :transaction-update (fn [old-val] (apply f old-val argv))
-    :on-success on-success
-    :on-failure on-failure
-    :apply-locally apply-locally}))
+    {:path               path
+     :transaction-update (fn [old-val] (apply f old-val argv))
+     :on-success         on-success
+     :on-failure         on-failure
+     :apply-locally      apply-locally}))
 
 (def swap-effect swapper)
 
@@ -112,13 +115,13 @@
     (do
       (console :error "Received null Firebase on-value request")
       (make-reaction
-       (fn []
-         ;; Minimal dummy response, to avoid blowing up caller
-         nil)))))
+        (fn []
+          ;; Minimal dummy response, to avoid blowing up caller
+          nil)))))
 
 (re-frame/reg-event-db
- ::on-value-handler
- (fn [app-db [_ id value]]
-   (if value
-     (assoc-in app-db [::cache id] value)
-     (update app-db ::cache dissoc id))))
+  ::on-value-handler
+  (fn [app-db [_ id value]]
+    (if value
+      (assoc-in app-db [::cache id] value)
+      (update app-db ::cache dissoc id))))
