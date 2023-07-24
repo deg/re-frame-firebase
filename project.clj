@@ -1,7 +1,7 @@
 ;;; Author: David Goldfarb (deg@degel.com)
 ;;; Copyright (c) 2017-8, David Goldfarb
 
-(defproject tallyfor/re-frame-firebase "0.10.2"
+(defproject tallyfor/re-frame-firebase "0.10.3"
   :description "A re-frame wrapper around firebase"
   :url "https://github.com/deg/re-frame-firebase"
   :license {:name "Eclipse Public License"
@@ -13,9 +13,7 @@
                  [com.degel/iron "0.4.0"]
                  [lein-pprint             "1.3.2"]
                  [lein-cljsbuild "1.1.8"]
-                 [lein-bump-version "0.1.6"]
-                 [lein-tools-deps "0.4.5"]]
-  :middleware [lein-tools-deps.plugin/resolve-dependencies-with-deps-edn]
+                 [lein-bump-version "0.1.6"]]
   ;; run lein install with LEIN_SNAPSHOTS_IN_RELEASE=true lein install
   :lein-tools-deps/config {:config-files [:install :user :project]}
 
