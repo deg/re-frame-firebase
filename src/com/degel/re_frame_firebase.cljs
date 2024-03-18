@@ -11,7 +11,8 @@
    [com.degel.re-frame-firebase.core :as core]
    [com.degel.re-frame-firebase.auth :as auth]
    [com.degel.re-frame-firebase.database :as database]
-   [com.degel.re-frame-firebase.firestore :as firestore]))
+   [com.degel.re-frame-firebase.firestore :as firestore]
+   [com.degel.re-frame-firebase.storage :as storage]))
 
 ;;; Write a value to Firebase.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#set
@@ -35,6 +36,28 @@
 ;;;
 (re-frame/reg-fx :firebase/update database/update-effect)
 
+;;; Transactionally reads and writes a value to Firebase.  NB: :transaction-update function
+;;; may run more than once so must be free of side effects.  Importantly, it must be able
+;;; to handle null data.  To abort a transaction, return js/undefined.
+;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#transaction
+;;;
+;;; Examples FX:
+;;; {:firebase/transaction {:path [:my :data]
+;;;                   :transaction-update (fn [old-val] (if old-val (inc old-val)))
+;;;                   :apply-locally false  ;; default is true = multiple update events may be received if transaction-update needs to be run more than once.
+;;;                   ;; The on-* handlers can also take a re-frame event
+;;;                   :on-success (fn [snapshot committed] (if committed (prn "Transaction committed: " snapshot)))
+;;;                   :on-failure (fn [err snapshot committed] (prn "Error: " err))}}
+;;;
+;;; {:firebase/swap {:path [:my :data]
+;;;                   :f +
+;;;                   :argv [2 3]
+;;;                   :apply-locally false  ;; default is true = multiple update events may be received if transaction-update needs to be run more than once.
+;;;                   ;; The on-* handlers can also take a re-frame event
+;;;                   :on-success (fn [snapshot committed] (if committed (prn "Transaction committed: " snapshot)))
+;;;                   :on-failure [:firebase-error]}}
+(re-frame/reg-fx :firebase/transaction database/transaction-effect)
+(re-frame/reg-fx :firebase/swap database/swap-effect)  ; A synonym with :argv for update function :f
 
 ;;; Write a value to a Firebase list.
 ;;; See https://firebase.google.com/docs/reference/js/firebase.database.Reference#push
@@ -74,6 +97,8 @@
              :firebase/write        (database/write-effect args)
              :firebase/update       (database/update-effect args)
              :firebase/push         (database/push-effect args)
+             :firebase/transaction  (database/transaction-effect args)
+             :firebase/swap         (database/swap-effect args)
              :firebase/read-once    (database/once-effect args)
              :firestore/delete      (firestore/delete-effect args)
              :firestore/set         (firestore/set-effect args)
@@ -120,10 +145,11 @@
 ;;;                                    "https://www.googleapis.com/auth/calendar.readonly"]
 ;;;                           :custom-parameters {"login_hint" "user@example.com"}}}
 ;;;
-(re-frame/reg-fx :firebase/google-sign-in   auth/google-sign-in)
-(re-frame/reg-fx :firebase/facebook-sign-in auth/facebook-sign-in)
-(re-frame/reg-fx :firebase/twitter-sign-in  auth/twitter-sign-in)
-(re-frame/reg-fx :firebase/github-sign-in   auth/github-sign-in)
+(re-frame/reg-fx :firebase/google-sign-in    auth/google-sign-in)
+(re-frame/reg-fx :firebase/facebook-sign-in  auth/facebook-sign-in)
+(re-frame/reg-fx :firebase/twitter-sign-in   auth/twitter-sign-in)
+(re-frame/reg-fx :firebase/github-sign-in    auth/github-sign-in)
+(re-frame/reg-fx :firebase/microsoft-sign-in auth/microsoft-sign-in)
 
 
 ;;; Login to firebase using email/password authentication
@@ -359,6 +385,11 @@
 ;;;   [:firestore/on-snapshot {:path-document [:my :document]}])
 ;;;
 (re-frame/reg-sub-raw :firestore/on-snapshot firestore/on-snapshot-sub)
+
+;;; Firebase Storage, an online object store, different from the similarly named Firestore.
+
+(re-frame/reg-fx :storage/put storage/put-effect)
+(re-frame/reg-fx :storage/delete storage/delete-effect)
 
 
 ;;; Start library and register callbacks.
