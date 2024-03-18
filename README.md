@@ -302,15 +302,19 @@ Example (diff in bold):
 > **Note:** Events will also receive the same creation key. `(rf/reg-event-fx :event-name (fn [ctx [_ key]])`
 
 
-`:firebase/update` can write to children subnodes, without overwriting children's siblings.  Use 
+`:firebase/update` can write to children and decendant subnodes, without overwriting siblings.  Use 
 a clojure map of children subnode(s) and their value(s).  `:firebase/write` overwrites all children.
+
+NB: to update second or deeper level decendants without disturbing siblings, use a
+string-delimited-with-slash (/) key.  See the "universe/subuniverse"
+example below.
 
 Example (diff in bold):
 
 <pre>
 (re-frame/reg-event-fx
   :update-status
-  (fn [{db :db} [_ <b>status-children</b>]]   ;; status-children is e.g. {:life 42, :universe 42, :everything 42}
+  (fn [{db :db} [_ <b>status-children</b>]]   ;; status-children is e.g. {:life 42, "universe/subuniverse" 42, :everything 42}
     {:firebase/<b>update</b> {:path [:status]
                       :value <b>status-children</b>
                       :on-success #(js/console.log <b>"Updated status-children"</b>)
